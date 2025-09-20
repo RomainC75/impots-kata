@@ -39,7 +39,7 @@ func TestTaxeTranches(t *testing.T) {
 		tranches := domain.NewTaxeTranches(revenu).SetTranches()
 		tranches.Display()
 
-		assert.Equal(t, expectedTranches, tranches.GetSplitRevenus())
+		assert.Equal(t, expectedTranches, tranches.GetRevenuByTranche())
 
 		tranches = tranches.Calculate()
 		assert.Equal(t, totalMontant, tranches.GetTotalTaxe())
