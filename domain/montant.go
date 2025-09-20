@@ -17,3 +17,7 @@ func (m Montant) ToFloat() float64 {
 func (m Montant) Add(other Montant) Montant {
 	return NewMontant(m.valeur + other.valeur)
 }
+
+func (m Montant) Sub(other Montant) Montant {
+	return NewMontant(m.valeur - other.valeur)
+}

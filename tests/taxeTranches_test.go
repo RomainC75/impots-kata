@@ -5,6 +5,7 @@ import (
 	"impots/domain"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,7 +37,10 @@ func TestTaxeTranches(t *testing.T) {
 		expectedTranches, totalMontant := testDriver(tc.expectedTranche, tc.totalMontant)
 
 		revenu, _ := domain.NewRevenu(tc.revenuValue)
-		tranches := domain.NewTaxeTranches(revenu).SetTranches()
+		userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
+		user := domain.NewUser(userUuid, revenu)
+
+		tranches := domain.NewTaxeTranches(user).SetTranches()
 		tranches.Display()
 
 		assert.Equal(t, expectedTranches, tranches.GetRevenuByTranche())
