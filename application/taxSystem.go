@@ -11,23 +11,23 @@ type CalculateTaxRequest struct {
 }
 
 type TaxSystem struct {
-	users domain.Users
+	payments domain.Payments
 }
 
-func NewTaxSystem(users domain.Users) *TaxSystem {
+func NewTaxSystem(payments domain.Payments) *TaxSystem {
 	return &TaxSystem{
-		users: users,
+		payments: payments,
 	}
 }
 
 func (ts *TaxSystem) CalculateTax(ctReq CalculateTaxRequest) (float64, error) {
-	foundUser, err := ts.users.GetUser(ctReq.userId)
+	foundPayment, err := ts.payments.ForUser(ctReq.userId)
 	if err != nil {
 		return 0, err
 	}
-	alreadypayedtax := foundUser.GetAlreadyPayedTaxe()
+	alreadypayedtax := foundPayment.GetAlreadyPayedTaxe()
 
-	tt := domain.NewTaxeTranches(foundUser).SetTranches().Calculate()
+	tt := domain.NewTaxeTranches(&foundPayment).SetTranches().Calculate()
 
 	return tt.GetTotalTaxe().Sub(alreadypayedtax).ToFloat(), nil
 }
