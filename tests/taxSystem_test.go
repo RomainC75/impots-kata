@@ -1,7 +1,9 @@
 package domain_test
 
 import (
+	"fmt"
 	"impots/application"
+	"impots/domain"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,20 +15,29 @@ type TaxSystemTestCases struct {
 }
 
 var tcs = []TaxSystemTestCases{
-	{9_000, 0},
-	{11_000, 100},
+	{5000, 0},
+	{12_000, 200},
 	{21_000, 1180},
-	{31_000, 2050},
-	{40_000, 4300},
+	{31_000, 3050},
+	{54_000, 9000},
 }
 
 func TestTaxSystem(t *testing.T) {
 	t.Run("calculate tax", func(t *testing.T) {
 		for _, tc := range tcs {
 			ts := application.NewTaxSystem()
-			tax := ts.CalculateTax(tc.paySlip)
+			tax, err := ts.CalculateTax(tc.paySlip)
+
+			assert.NoError(t, err)
 
 			assert.Equal(t, tc.expected, tax)
 		}
+	})
+
+	t.Run("expect an Error", func(t *testing.T) {
+		ts := application.NewTaxSystem()
+		_, err := ts.CalculateTax(-1)
+
+		assert.Error(t, err, fmt.Errorf(domain.ERROR_NEGATIVE_VALEUR))
 	})
 }
