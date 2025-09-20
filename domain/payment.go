@@ -20,6 +20,13 @@ func (p *Payment) GetAlreadyPayedTaxe() Montant {
 	return p.alreadyPayedTaxe
 }
 
+func (p *Payment) GetTaxableBase() Montant {
+	if p.revenu.Less(NewMontant(10_000)) {
+		return NewMontant(0)
+	}
+	return NewMontant(p.revenu.valeur - 10_000)
+}
+
 func (p *Payment) AddPayedTaxe(payed Montant) {
 	p.alreadyPayedTaxe = p.alreadyPayedTaxe.Add(payed)
 }
