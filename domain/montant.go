@@ -10,7 +10,7 @@ func NewMontant(valeur float64) Montant {
 	}
 }
 
-func (m Montant) GetMontant() float64 {
+func (m Montant) ToFloat() float64 {
 	return m.valeur
 }
 

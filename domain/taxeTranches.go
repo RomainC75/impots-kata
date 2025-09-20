@@ -3,10 +3,10 @@ package domain
 import "fmt"
 
 type TaxeTranches struct {
-	revenu      Revenu
-	tranches    [5]TaxeTranche
-	splitRevenu [5]Montant
-	totalTaxe   Montant
+	revenu           Revenu
+	tranches         [5]TaxeTranche
+	splitRevenu      [5]Montant
+	totalTaxeMontant Montant
 }
 
 func NewTaxeTranches(revenu Revenu) TaxeTranches {
@@ -52,7 +52,7 @@ func (tt TaxeTranches) Calculate() TaxeTranches {
 	for i, sr := range tt.splitRevenu {
 		total = total.Add(tt.tranches[i](sr))
 	}
-	tt.totalTaxe = total
+	tt.totalTaxeMontant = total
 	return tt
 }
 
@@ -61,7 +61,7 @@ func (tt TaxeTranches) GetSplitRevenus() [5]Montant {
 }
 
 func (tt TaxeTranches) GetTotalTaxe() Montant {
-	return tt.totalTaxe
+	return tt.totalTaxeMontant
 }
 
 func (tt TaxeTranches) Display() {
