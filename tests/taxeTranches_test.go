@@ -33,12 +33,11 @@ func testDriver(arr [5]float64, totalMontant float64) ([5]domain.Montant, domain
 func TestTaxeTranches(t *testing.T) {
 	fmt.Println(testCases)
 	for _, tc := range testCases {
+		expectedTranches, totalMontant := testDriver(tc.expectedTranche, tc.totalMontant)
 
 		revenu, _ := domain.NewRevenu(tc.revenuValue)
 		tranches := domain.NewTaxeTranches(revenu).SetTranches()
 		tranches.Display()
-
-		expectedTranches, totalMontant := testDriver(tc.expectedTranche, tc.totalMontant)
 
 		assert.Equal(t, expectedTranches, tranches.GetSplitRevenus())
 

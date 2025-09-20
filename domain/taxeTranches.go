@@ -5,6 +5,7 @@ import "fmt"
 type TaxeTranches struct {
 	revenu           Revenu
 	tranches         [5]TaxeTranche
+	trancheLimits    [5]float64
 	splitRevenu      [5]Montant
 	totalTaxeMontant Montant
 }
@@ -20,22 +21,22 @@ func NewTaxeTranches(revenu Revenu) TaxeTranches {
 			TaxeTrancheFn(NewTaxe(25)),
 			TaxeTrancheFn(NewTaxe(30)),
 		},
+		trancheLimits: [5]float64{
+			0,
+			10_000,
+			20_000,
+			30_000,
+			50_000,
+		},
 	}
 }
 
 func (tt TaxeTranches) SetTranches() TaxeTranches {
-	tranchesLimits := []float64{
-		0,
-		10_000,
-		20_000,
-		30_000,
-		50_000,
-	}
 
 	steps := [5]Montant{}
 	revenuBuff := tt.revenu
-	for i := len(tranchesLimits) - 1; i >= 0; i-- {
-		reste, err := revenuBuff.Substract(NewMontant(tranchesLimits[i]))
+	for i := len(tt.trancheLimits) - 1; i >= 0; i-- {
+		reste, err := revenuBuff.Substract(NewMontant(tt.trancheLimits[i]))
 		if err != nil {
 			steps[i] = NewMontant(0)
 		} else {
