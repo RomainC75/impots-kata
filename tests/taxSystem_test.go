@@ -27,12 +27,12 @@ func TestTaxSystem(t *testing.T) {
 	t.Run("calculate tax", func(t *testing.T) {
 		for _, tc := range tcs {
 			userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
-			inMemoryUsers := infra.NewInMemoryUsers()
+			inMemoryPayments := infra.InMemoryPayments{}
 			revenu, _ := domain.NewRevenu(tc.paySlip)
-			user := domain.NewUser(userUuid, revenu)
-			inMemoryUsers.ExpectedUser = user
+			payment := domain.NewPayment(userUuid, revenu)
+			inMemoryPayments.ExpectedPayement = *payment
 
-			ts := application.NewTaxSystem(inMemoryUsers)
+			ts := application.NewTaxSystem(&inMemoryPayments)
 			tax, err := ts.CalculateTax(application.CalculateTaxRequest{})
 
 			assert.NoError(t, err)
@@ -41,10 +41,4 @@ func TestTaxSystem(t *testing.T) {
 		}
 	})
 
-	// t.Run("expect an Error", func(t *testing.T) {
-	// 	ts := application.NewTaxSystem()
-	// 	_, err := ts.CalculateTax(-1)
-
-	// 	assert.Error(t, err, fmt.Errorf(domain.ERROR_NEGATIVE_VALEUR))
-	// })
 }

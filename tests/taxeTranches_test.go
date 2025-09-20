@@ -36,11 +36,11 @@ func TestTaxeTranches(t *testing.T) {
 	for _, tc := range testCases {
 		expectedTranches, totalMontant := testDriver(tc.expectedTranche, tc.totalMontant)
 
-		revenu, _ := domain.NewRevenu(tc.revenuValue)
 		userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
-		user := domain.NewUser(userUuid, revenu)
+		revenu, _ := domain.NewRevenu(tc.revenuValue)
+		payment := domain.NewPayment(userUuid, revenu)
 
-		tranches := domain.NewTaxeTranches(user).SetTranches()
+		tranches := domain.NewTaxeTranches(payment).SetTranches()
 		tranches.Display()
 
 		assert.Equal(t, expectedTranches, tranches.GetRevenuByTranche())
