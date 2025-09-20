@@ -1,20 +1,33 @@
 package application
 
-import "impots/domain"
+import (
+	"impots/domain"
+
+	"github.com/google/uuid"
+)
+
+type CalculateTaxRequest struct {
+	userId uuid.UUID
+}
 
 type TaxSystem struct {
+	users domain.Users
 }
 
-func NewTaxSystem() *TaxSystem {
-	return &TaxSystem{}
+func NewTaxSystem(users domain.Users) *TaxSystem {
+	return &TaxSystem{
+		users: users,
+	}
 }
 
-func (ts *TaxSystem) CalculateTax(paySlip float64) (float64, error) {
-	revenu, err := domain.NewRevenu(paySlip)
+func (ts *TaxSystem) CalculateTax(ctReq CalculateTaxRequest) (float64, error) {
+	foundUser, err := ts.users.GetUser(ctReq.userId)
 	if err != nil {
 		return 0, err
 	}
-	tt := domain.NewTaxeTranches(revenu).SetTranches().Calculate()
+	alreadypayedtax := foundUser.GetAlreadyPayedTaxe()
 
-	return tt.GetTotalTaxe().ToFloat(), nil
+	tt := domain.NewTaxeTranches(foundUser).SetTranches().Calculate()
+
+	return tt.GetTotalTaxe().Sub(alreadypayedtax).ToFloat(), nil
 }

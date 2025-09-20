@@ -10,9 +10,9 @@ type TaxeTranches struct {
 	totalTaxeMontant Montant
 }
 
-func NewTaxeTranches(revenu Revenu) TaxeTranches {
+func NewTaxeTranches(user *User) TaxeTranches {
 	return TaxeTranches{
-		fullRevenu:      revenu,
+		fullRevenu:      user.getRevenu(),
 		revenuByTranche: [5]Montant{},
 		tranches: [5]TaxeTranche{
 			TaxeTrancheFn(NewTaxe(0)),
