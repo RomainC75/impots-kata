@@ -1,9 +1,14 @@
 package infra
 
 import (
+	"errors"
 	"impots/domain"
 
 	"github.com/google/uuid"
+)
+
+const (
+	ERROR_PAYMENT_NOT_FOUND = "payment not found"
 )
 
 type InMemoryPayments struct {
@@ -11,5 +16,8 @@ type InMemoryPayments struct {
 }
 
 func (imp *InMemoryPayments) ForUser(userId uuid.UUID) (domain.Payment, error) {
-	return imp.ExpectedPayement, nil
+	if imp.ExpectedPayement.GetUserId() == userId {
+		return imp.ExpectedPayement, nil
+	}
+	return domain.Payment{}, errors.New(ERROR_PAYMENT_NOT_FOUND)
 }
