@@ -7,7 +7,7 @@ import (
 )
 
 type CalculateTaxRequest struct {
-	userId uuid.UUID
+	UserId uuid.UUID
 }
 
 type TaxSystem struct {
@@ -21,7 +21,7 @@ func NewTaxSystem(payments domain.Payments) *TaxSystem {
 }
 
 func (ts *TaxSystem) CalculateTax(ctReq CalculateTaxRequest) (float64, error) {
-	foundPayment, err := ts.payments.ForUser(ctReq.userId)
+	foundPayment, err := ts.payments.ForUser(ctReq.UserId)
 	if err != nil {
 		return 0, err
 	}

@@ -27,3 +27,7 @@ func (p *Payment) AddPayedTaxe(payed Montant) {
 func (p *Payment) getRevenu() Revenu {
 	return p.revenu
 }
+
+func (p *Payment) GetUserId() uuid.UUID {
+	return p.userId
+}

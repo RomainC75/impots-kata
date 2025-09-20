@@ -23,17 +23,25 @@ var tcs = []TaxSystemTestCases{
 	{54_000, 9000},
 }
 
+func testDriver(paySlip float64) (*application.TaxSystem, uuid.UUID) {
+	userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
+	inMemoryPayments := infra.InMemoryPayments{}
+	revenu, _ := domain.NewRevenu(paySlip)
+	payment := domain.NewPayment(userUuid, revenu)
+	inMemoryPayments.ExpectedPayement = *payment
+
+	ts := application.NewTaxSystem(&inMemoryPayments)
+	return ts, userUuid
+
+}
+
 func TestTaxSystem(t *testing.T) {
 	t.Run("calculate tax", func(t *testing.T) {
 		for _, tc := range tcs {
-			userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
-			inMemoryPayments := infra.InMemoryPayments{}
-			revenu, _ := domain.NewRevenu(tc.paySlip)
-			payment := domain.NewPayment(userUuid, revenu)
-			inMemoryPayments.ExpectedPayement = *payment
-
-			ts := application.NewTaxSystem(&inMemoryPayments)
-			tax, err := ts.CalculateTax(application.CalculateTaxRequest{})
+			ts, userId := testDriver(tc.paySlip)
+			tax, err := ts.CalculateTax(application.CalculateTaxRequest{
+				UserId: userId,
+			})
 
 			assert.NoError(t, err)
 

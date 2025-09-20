@@ -23,7 +23,7 @@ var testCases = []TaxeTranchesTestCase{
 	{54000, [5]float64{10000, 10000, 10000, 20000, 4000}, 9000},
 }
 
-func testDriver(arr [5]float64, totalMontant float64) ([5]domain.Montant, domain.Montant) {
+func taxeTranchesTestDriver(arr [5]float64, totalMontant float64) ([5]domain.Montant, domain.Montant) {
 	montants := [5]domain.Montant{}
 	for i, montant := range arr {
 		montants[i] = domain.NewMontant(montant)
@@ -34,7 +34,7 @@ func testDriver(arr [5]float64, totalMontant float64) ([5]domain.Montant, domain
 func TestTaxeTranches(t *testing.T) {
 	fmt.Println(testCases)
 	for _, tc := range testCases {
-		expectedTranches, totalMontant := testDriver(tc.expectedTranche, tc.totalMontant)
+		expectedTranches, totalMontant := taxeTranchesTestDriver(tc.expectedTranche, tc.totalMontant)
 
 		userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
 		revenu, _ := domain.NewRevenu(tc.revenuValue)
