@@ -11,43 +11,56 @@ import (
 )
 
 type TaxSystemTestCases struct {
-	paySlip  float64
-	expected application.CalculateTaxResponse
+	paySlip           float64
+	alreadyPayedTaxes float64
+	expected          application.CalculateTaxResponse
 }
 
 var tcs = []TaxSystemTestCases{
-	{5000, application.CalculateTaxResponse{
+	{5000, 0, application.CalculateTaxResponse{
 		TaxableBase:     0,
 		Alreadypayedtax: 0,
 		ToBePayed:       0,
 	}},
-	{12_000, application.CalculateTaxResponse{
+	{12_000, 0, application.CalculateTaxResponse{
 		TaxableBase:     2_000,
 		Alreadypayedtax: 0,
 		ToBePayed:       200,
 	}},
-	{21_000, application.CalculateTaxResponse{
+	{21_000, 0, application.CalculateTaxResponse{
 		TaxableBase:     11_000,
 		Alreadypayedtax: 0,
 		ToBePayed:       1180,
 	}},
-	{31_000, application.CalculateTaxResponse{
+	{31_000, 0, application.CalculateTaxResponse{
 		TaxableBase:     21_000,
 		Alreadypayedtax: 0,
 		ToBePayed:       3050,
 	}},
-	{54_000, application.CalculateTaxResponse{
+	{54_000, 0, application.CalculateTaxResponse{
 		TaxableBase:     44_000,
 		Alreadypayedtax: 0,
 		ToBePayed:       9000,
 	}},
+
+	{54_000, 3000, application.CalculateTaxResponse{
+		TaxableBase:     44_000,
+		Alreadypayedtax: 3000,
+		ToBePayed:       6000,
+	}},
+	{21_000, 500, application.CalculateTaxResponse{
+		TaxableBase:     11_000,
+		Alreadypayedtax: 500,
+		ToBePayed:       680,
+	}},
 }
 
-func testDriver(paySlip float64) (*application.TaxSystem, uuid.UUID) {
+func testDriver(paySlip float64, alreadyPayedTax float64) (*application.TaxSystem, uuid.UUID) {
 	userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
 	inMemoryPayments := infra.InMemoryPayments{}
 	revenu, _ := domain.NewRevenu(paySlip)
 	payment := domain.NewPayment(userUuid, revenu)
+	payment.AddPayedTaxe(domain.NewMontant(alreadyPayedTax))
 	inMemoryPayments.ExpectedPayement = *payment
 
 	ts := application.NewTaxSystem(&inMemoryPayments)
@@ -58,7 +71,7 @@ func testDriver(paySlip float64) (*application.TaxSystem, uuid.UUID) {
 func TestTaxSystem(t *testing.T) {
 	t.Run("calculate tax", func(t *testing.T) {
 		for _, tc := range tcs {
-			ts, userId := testDriver(tc.paySlip)
+			ts, userId := testDriver(tc.paySlip, tc.alreadyPayedTaxes)
 			tax, err := ts.CalculateTax(application.CalculateTaxRequest{
 				UserId: userId,
 			})
