@@ -12,15 +12,35 @@ import (
 
 type TaxSystemTestCases struct {
 	paySlip  float64
-	expected float64
+	expected application.CalculateTaxResponse
 }
 
 var tcs = []TaxSystemTestCases{
-	{5000, 0},
-	{12_000, 200},
-	{21_000, 1180},
-	{31_000, 3050},
-	{54_000, 9000},
+	{5000, application.CalculateTaxResponse{
+		TaxableBase:     0,
+		Alreadypayedtax: 0,
+		ToBePayed:       0,
+	}},
+	{12_000, application.CalculateTaxResponse{
+		TaxableBase:     2_000,
+		Alreadypayedtax: 0,
+		ToBePayed:       200,
+	}},
+	{21_000, application.CalculateTaxResponse{
+		TaxableBase:     11_000,
+		Alreadypayedtax: 0,
+		ToBePayed:       1180,
+	}},
+	{31_000, application.CalculateTaxResponse{
+		TaxableBase:     21_000,
+		Alreadypayedtax: 0,
+		ToBePayed:       3050,
+	}},
+	{54_000, application.CalculateTaxResponse{
+		TaxableBase:     44_000,
+		Alreadypayedtax: 0,
+		ToBePayed:       9000,
+	}},
 }
 
 func testDriver(paySlip float64) (*application.TaxSystem, uuid.UUID) {

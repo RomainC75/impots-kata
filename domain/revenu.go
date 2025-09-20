@@ -28,3 +28,7 @@ func (r Revenu) CanSubstract(montant Montant) bool {
 func (r Revenu) ToMontant() Montant {
 	return NewMontant(r.valeur)
 }
+
+func (r Revenu) Less(other Montant) bool {
+	return r.valeur-other.valeur < 0
+}
