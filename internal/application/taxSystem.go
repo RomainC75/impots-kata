@@ -1,7 +1,7 @@
 package application
 
 import (
-	"impots/domain"
+	"impots/internal/domain"
 
 	"github.com/google/uuid"
 )

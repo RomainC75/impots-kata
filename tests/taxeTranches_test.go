@@ -2,7 +2,7 @@ package domain_test
 
 import (
 	"fmt"
-	d "impots/domain"
+	d "impots/internal/domain"
 	"testing"
 
 	"github.com/google/uuid"

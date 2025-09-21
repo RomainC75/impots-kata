@@ -1,9 +1,9 @@
 package domain_test
 
 import (
-	"impots/application"
-	"impots/domain"
-	infra "impots/infrastructure"
+	"impots/internal/application"
+	"impots/internal/domain"
+	infra "impots/internal/infrastructure"
 	"testing"
 
 	"github.com/google/uuid"
@@ -57,13 +57,13 @@ var tcs = []TaxSystemTestCases{
 
 func testDriver(paySlip float64, alreadyPayedTax float64) (*application.TaxSystem, uuid.UUID) {
 	userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
-	inMemoryPayments := infra.InMemoryPayments{}
+	inMemoryPayments := infra.NewInMemoryPayments()
 	revenu, _ := domain.NewRevenu(paySlip)
 	payment := domain.NewPayment(userUuid, revenu)
 	payment.AddPayedTaxe(domain.NewMontant(alreadyPayedTax))
 	inMemoryPayments.ExpectedPayement = *payment
 
-	ts := application.NewTaxSystem(&inMemoryPayments)
+	ts := application.NewTaxSystem(inMemoryPayments)
 	return ts, userUuid
 
 }
