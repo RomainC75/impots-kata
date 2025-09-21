@@ -13,39 +13,58 @@ type TaxeTranchesTestCase struct {
 	revenuValue     float64
 	expectedTranche [5]float64
 	totalMontant    float64
+	reduction       *domain.TaxReductionBasicInfo
 }
 
 var testCases = []TaxeTranchesTestCase{
-	{5000, [5]float64{5000, 0, 0, 0, 0}, 0},
-	{12000, [5]float64{10000, 2000, 0, 0, 0}, 200},
-	{21000, [5]float64{10000, 10000, 1000, 0, 0}, 1180},
-	{31000, [5]float64{10000, 10000, 10000, 1000, 0}, 3050},
-	{54000, [5]float64{10000, 10000, 10000, 20000, 4000}, 9000},
+	// NO REDUCTION
+	{revenuValue: 5000, expectedTranche: [5]float64{5000, 0, 0, 0, 0}, totalMontant: 0},
+	{revenuValue: 12000, expectedTranche: [5]float64{10000, 2000, 0, 0, 0}, totalMontant: 200},
+	{revenuValue: 21000, expectedTranche: [5]float64{10000, 10000, 1000, 0, 0}, totalMontant: 1180},
+	{revenuValue: 31000, expectedTranche: [5]float64{10000, 10000, 10000, 1000, 0}, totalMontant: 3050},
+	{revenuValue: 54000, expectedTranche: [5]float64{10000, 10000, 10000, 20000, 4000}, totalMontant: 9000, reduction: &domain.TaxReductionBasicInfo{ReductionType: "FIXE", ReductionValue: 0}},
+
+	// FIXE
+	{revenuValue: 5000, expectedTranche: [5]float64{5000, 0, 0, 0, 0}, totalMontant: 0},
+	{revenuValue: 12000, expectedTranche: [5]float64{10000, 2000, 0, 0, 0}, totalMontant: 100, reduction: &domain.TaxReductionBasicInfo{ReductionType: "FIXE", ReductionValue: 100}},
+	{revenuValue: 21000, expectedTranche: [5]float64{10000, 10000, 1000, 0, 0}, totalMontant: 680, reduction: &domain.TaxReductionBasicInfo{ReductionType: "FIXE", ReductionValue: 500}},
+	{revenuValue: 31000, expectedTranche: [5]float64{10000, 10000, 10000, 1000, 0}, totalMontant: 2050, reduction: &domain.TaxReductionBasicInfo{ReductionType: "FIXE", ReductionValue: 1000}},
+	{revenuValue: 54000, expectedTranche: [5]float64{10000, 10000, 10000, 20000, 4000}, totalMontant: 7000, reduction: &domain.TaxReductionBasicInfo{ReductionType: "FIXE", ReductionValue: 2000}},
+
+	// PERCENT
+	{revenuValue: 54000, expectedTranche: [5]float64{10000, 10000, 10000, 20000, 4000}, totalMontant: 4500, reduction: &domain.TaxReductionBasicInfo{ReductionType: "PERCENT", ReductionValue: 50}},
+	{revenuValue: 21000, expectedTranche: [5]float64{10000, 10000, 1000, 0, 0}, totalMontant: 1062, reduction: &domain.TaxReductionBasicInfo{ReductionType: "PERCENT", ReductionValue: 10}},
+	{revenuValue: 31000, expectedTranche: [5]float64{10000, 10000, 10000, 1000, 0}, totalMontant: 2440, reduction: &domain.TaxReductionBasicInfo{ReductionType: "PERCENT", ReductionValue: 20}},
 }
 
-func taxeTranchesTestDriver(arr [5]float64, totalMontant float64) ([5]domain.Montant, domain.Montant) {
+func taxeTranchesTestDriver(tc TaxeTranchesTestCase) ([5]domain.Montant, domain.Montant, domain.TaxReduction) {
+
 	montants := [5]domain.Montant{}
-	for i, montant := range arr {
+	for i, montant := range tc.expectedTranche {
 		montants[i] = domain.NewMontant(montant)
 	}
-	return montants, domain.NewMontant(totalMontant)
+
+	taxReduction, _ := domain.CreateTaxReductionCreator(tc.reduction)
+
+	return montants, domain.NewMontant(tc.totalMontant), taxReduction
 }
 
 func TestTaxeTranches(t *testing.T) {
-	fmt.Println(testCases)
-	for _, tc := range testCases {
-		expectedTranches, totalMontant := taxeTranchesTestDriver(tc.expectedTranche, tc.totalMontant)
+	for i, tc := range testCases {
+		t.Run(fmt.Sprintf("-> %d : shoud calculate tax tranches %f\n", i, tc.revenuValue), func(t *testing.T) {
+			expectedTranches, totalMontant, taxReduction := taxeTranchesTestDriver(tc)
 
-		userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
-		revenu, _ := domain.NewRevenu(tc.revenuValue)
-		payment := domain.NewPayment(userUuid, revenu)
+			userUuid := uuid.MustParse("45c971a4-5aeb-40e8-ba51-0f6698e92528")
+			revenu, _ := domain.NewRevenu(tc.revenuValue)
+			payment := domain.NewPayment(userUuid, revenu)
 
-		tranches := domain.NewTaxeTranches(payment).SetTranches()
-		tranches.Display()
+			tranches := domain.NewTaxeTranches(payment).SetTranches()
+			// tranches.Display()
 
-		assert.Equal(t, expectedTranches, tranches.GetRevenuByTranche())
+			assert.Equal(t, expectedTranches, tranches.GetRevenuByTranche())
 
-		tranches = tranches.Calculate()
-		assert.Equal(t, totalMontant, tranches.GetTotalTaxe())
+			tranches = tranches.Calculate()
+			assert.Equal(t, totalMontant, tranches.GetTotalTaxe(taxReduction))
+		})
 	}
 }

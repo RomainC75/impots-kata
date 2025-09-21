@@ -7,7 +7,8 @@ import (
 )
 
 type CalculateTaxRequest struct {
-	UserId uuid.UUID
+	UserId       uuid.UUID
+	TaxReduction *domain.TaxReductionBasicInfo
 }
 
 type CalculateTaxResponse struct {
@@ -35,9 +36,14 @@ func (ts *TaxSystem) CalculateTax(ctReq CalculateTaxRequest) (CalculateTaxRespon
 
 	tt := domain.NewTaxeTranches(&foundPayment).SetTranches().Calculate()
 
+	taxeReduction, err := domain.CreateTaxReductionCreator(ctReq.TaxReduction)
+	if err != nil {
+		return CalculateTaxResponse{}, nil
+	}
+
 	return CalculateTaxResponse{
 		TaxableBase:     foundPayment.GetTaxableBase().ToFloat(),
 		Alreadypayedtax: foundPayment.GetAlreadyPayedTaxe().ToFloat(),
-		ToBePayed:       tt.GetTotalTaxe().Sub(alreadypayedtax).ToFloat(),
+		ToBePayed:       tt.GetTotalTaxe(taxeReduction).Sub(alreadypayedtax).ToFloat(),
 	}, nil
 }

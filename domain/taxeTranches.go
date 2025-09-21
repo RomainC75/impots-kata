@@ -60,8 +60,8 @@ func (tt TaxeTranches) GetRevenuByTranche() [5]Montant {
 	return tt.revenuByTranche
 }
 
-func (tt TaxeTranches) GetTotalTaxe() Montant {
-	return tt.totalTaxeMontant
+func (tt TaxeTranches) GetTotalTaxe(taxReduction TaxReduction) Montant {
+	return taxReduction.ApplyTo(tt.totalTaxeMontant)
 }
 
 func (tt TaxeTranches) Display() {
