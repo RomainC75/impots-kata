@@ -2,7 +2,7 @@ package infra
 
 import (
 	"errors"
-	"impots/domain"
+	"impots/internal/domain"
 
 	"github.com/google/uuid"
 )
@@ -13,6 +13,10 @@ const (
 
 type InMemoryPayments struct {
 	ExpectedPayement domain.Payment
+}
+
+func NewInMemoryPayments() *InMemoryPayments {
+	return &InMemoryPayments{}
 }
 
 func (imp *InMemoryPayments) ForUser(userId uuid.UUID) (domain.Payment, error) {
