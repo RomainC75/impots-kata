@@ -8,7 +8,7 @@ import (
 
 type CalculateTaxRequest struct {
 	UserId       uuid.UUID
-	TaxReduction *domain.TaxReductionBasicInfo
+	TaxReduction []domain.TaxReductionBasicInfo
 }
 
 type CalculateTaxResponse struct {
@@ -36,7 +36,7 @@ func (ts *TaxSystem) CalculateTax(ctReq CalculateTaxRequest) (CalculateTaxRespon
 
 	tt := domain.NewTaxeTranches(&foundPayment).SetTranches().Calculate()
 
-	taxeReduction, err := domain.CreateTaxReductionCreator(ctReq.TaxReduction)
+	taxeReduction, err := domain.NewTaxeReductions(ctReq.TaxReduction)
 	if err != nil {
 		return CalculateTaxResponse{}, nil
 	}

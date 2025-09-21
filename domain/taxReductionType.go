@@ -37,9 +37,6 @@ func (rt ReductionType) ApplyFn() func(montant Montant, reductionValue float64) 
 func (rt ReductionType) ApplyFixeReduction() func(montant Montant, reductionValue float64) Montant {
 	return func(montant Montant, reductionValue float64) Montant {
 		res := montant.ToFloat() - reductionValue
-		if res < 0 {
-			return NewMontant(0)
-		}
 		return NewMontant(res)
 	}
 }
@@ -47,9 +44,6 @@ func (rt ReductionType) ApplyFixeReduction() func(montant Montant, reductionValu
 func (rt ReductionType) ApplyPercentReduction() func(montant Montant, reductionValue float64) Montant {
 	return func(montant Montant, reductionValue float64) Montant {
 		res := montant.ToFloat() - montant.ToFloat()*reductionValue/100
-		if res < 0 {
-			return NewMontant(0)
-		}
 		return NewMontant(res)
 	}
 }

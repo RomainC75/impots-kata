@@ -60,7 +60,7 @@ func (tt TaxeTranches) GetRevenuByTranche() [5]Montant {
 	return tt.revenuByTranche
 }
 
-func (tt TaxeTranches) GetTotalTaxe(taxReduction TaxReduction) Montant {
+func (tt TaxeTranches) GetTotalTaxe(taxReduction TaxReductions) Montant {
 	return taxReduction.ApplyTo(tt.totalTaxeMontant)
 }
 
