@@ -35,6 +35,10 @@ var testCases = []TaxeTranchesTestCase{
 	{revenuValue: 54000, expectedTranche: [5]float64{10000, 10000, 10000, 20000, 4000}, totalMontant: 4500, reduction: &domain.TaxReductionBasicInfo{ReductionType: "PERCENT", ReductionValue: 50}},
 	{revenuValue: 21000, expectedTranche: [5]float64{10000, 10000, 1000, 0, 0}, totalMontant: 1062, reduction: &domain.TaxReductionBasicInfo{ReductionType: "PERCENT", ReductionValue: 10}},
 	{revenuValue: 31000, expectedTranche: [5]float64{10000, 10000, 10000, 1000, 0}, totalMontant: 2440, reduction: &domain.TaxReductionBasicInfo{ReductionType: "PERCENT", ReductionValue: 20}},
+
+	// EDGE
+	{revenuValue: 12000, expectedTranche: [5]float64{10000, 2000, 0, 0, 0}, totalMontant: 0, reduction: &domain.TaxReductionBasicInfo{ReductionType: "FIXE", ReductionValue: 300}},
+	{revenuValue: 54000, expectedTranche: [5]float64{10000, 10000, 10000, 20000, 4000}, totalMontant: 0, reduction: &domain.TaxReductionBasicInfo{ReductionType: "PERCENT", ReductionValue: 120}},
 }
 
 func taxeTranchesTestDriver(tc TaxeTranchesTestCase) ([5]domain.Montant, domain.Montant, domain.TaxReduction) {
