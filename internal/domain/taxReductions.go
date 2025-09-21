@@ -5,8 +5,8 @@ import (
 )
 
 type TaxReductionBasicInfo struct {
-	ReductionType  string
-	ReductionValue float64
+	ReductionType  string  `json:"type"`
+	ReductionValue float64 `json:"value"`
 }
 
 type TaxReductions struct {

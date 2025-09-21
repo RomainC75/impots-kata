@@ -7,8 +7,8 @@ import (
 )
 
 type CalculateTaxRequest struct {
-	UserId       uuid.UUID
-	TaxReduction []domain.TaxReductionBasicInfo
+	UserId       uuid.UUID                      `json:"user_id"`
+	TaxReduction []domain.TaxReductionBasicInfo `json:"tax_reductions"`
 }
 
 type CalculateTaxResponse struct {
