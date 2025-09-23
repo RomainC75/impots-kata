@@ -6,6 +6,6 @@ import (
 )
 
 func SetRoutes(mux *http.ServeMux) {
-	routing.HelloRoutes(mux)
-	routing.TaxeRoutes(mux)
+	mux.Handle("/hello", routing.HelloRoutes())
+	mux.Handle("/taxes", routing.TaxeRoutes())
 }

@@ -21,11 +21,13 @@ func setupPayments() domain.Payments {
 	return payments
 }
 
-func TaxeRoutes(mux *http.ServeMux) {
+func TaxeRoutes() http.Handler {
+	taxesRoutes := http.NewServeMux()
 
 	taxSystem := application.NewTaxSystem(setupPayments())
-
 	ctrl := routes.NewTaxCtrl(taxSystem)
 
-	mux.HandleFunc("POST /taxes", ctrl.TaxCalculation)
+	taxesRoutes.HandleFunc("POST /taxes", ctrl.TaxCalculation)
+
+	return taxesRoutes
 }
