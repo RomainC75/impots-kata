@@ -1,14 +1,26 @@
 package domain
 
-type TaxCalculator struct{}
-
-func NewTaxCalculator() TaxCalculator {
-	return TaxCalculator{}
+type TaxCalculator struct {
+	prepayed          Taxe
+	paySlip           Revenu
+	reductionsHandler ReductionsHandler
 }
 
-func (tc TaxCalculator) CalculateTaxeToPay(user User, paySlip Revenu) Taxe {
-	tranches := NewTranches()
-	taxe := tranches.CalculateTaxe(paySlip)
+func NewTaxCalculator(prepayed Taxe, paySlip Revenu, reductionHandler ReductionsHandler) TaxCalculator {
+	return TaxCalculator{
+		prepayed:          prepayed,
+		paySlip:           paySlip,
+		reductionsHandler: reductionHandler,
+	}
+}
 
-	return taxe.Sub(user.payedTaxe)
+func (tc TaxCalculator) CalculateTaxeToPay() Taxe {
+	tranches := NewTranches()
+	// brut
+	taxe := tranches.CalculateTaxe(tc.paySlip)
+	// - prepayed
+	taxe = taxe.Sub(tc.prepayed)
+	// - reductions
+	taxe = tc.reductionsHandler.ApplyReductions(taxe)
+	return taxe
 }

@@ -16,7 +16,8 @@ func TestTaxSystem(t *testing.T) {
 			taxSystem := taxSystemTestDriver(tc.AlreadyPayed)
 
 			cisRequest := applications.CalculateImpotsServiceRequest{
-				Payslip: domain.NewRevenu(tc.Revenu),
+				Payslip:    domain.NewRevenu(tc.Revenu),
+				Reductions: tc.Reductions,
 			}
 			response, err := taxSystem.CalculateTax(cisRequest)
 			assert.Nil(t, err)
