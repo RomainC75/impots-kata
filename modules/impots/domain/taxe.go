@@ -28,6 +28,10 @@ func (t Taxe) Sub(other Taxe) Taxe {
 	return result.ToTaxe()
 }
 
+func (t Taxe) MultiplyByValue(value float64) Taxe {
+	return NewTaxe(t.value * value)
+}
+
 func TaxeBaseMontantFromRevenu(revenu Revenu) Montant {
 	taxableThreshold := NewMontant(10_000)
 	base := revenu.Sub(taxableThreshold)

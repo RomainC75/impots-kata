@@ -3,18 +3,30 @@ package units
 import (
 	"fmt"
 	"impots/modules/impots/domain"
-	"impots/modules/impots/tests"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+type TranchesTC struct {
+	Revenu            float64
+	ExpectedTaxeToPay float64
+}
+
+var tranchesTC []TranchesTC = []TranchesTC{
+	{10_000, 0},
+	{15_000, 500},
+	{20_000, 1000},
+	{30_000, 2800},
+	{35_000, 4050},
+	{40_000, 5300},
+	{50_000, 7800},
+	{60_000, 10_800},
+}
+
 func TestTranches(t *testing.T) {
-	for _, tc := range tests.Tcs {
+	for _, tc := range tranchesTC {
 		t.Run(fmt.Sprintf("-> revenu %f", tc.Revenu), func(t *testing.T) {
-			if tc.AlreadyPayed != 0 {
-				t.Skip()
-			}
 			revenu := domain.NewRevenu(tc.Revenu)
 			tranches := domain.NewTranches()
 			taxesToPay := tranches.CalculateTaxe(revenu)

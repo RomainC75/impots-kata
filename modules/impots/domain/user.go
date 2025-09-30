@@ -3,8 +3,8 @@ package domain
 import "github.com/google/uuid"
 
 type User struct {
-	id        uuid.UUID
-	payedTaxe Taxe
+	id      uuid.UUID
+	prepaid Taxe
 }
 
 func NewUser(uuid uuid.UUID) *User {
@@ -14,9 +14,9 @@ func NewUser(uuid uuid.UUID) *User {
 }
 
 func (u *User) PayTaxe(taxe Taxe) {
-	u.payedTaxe = u.payedTaxe.Add(taxe)
+	u.prepaid = u.prepaid.Add(taxe)
 }
 
-func (u *User) GetPayedTaxe() Taxe {
-	return u.payedTaxe
+func (u *User) Getprepaid() Taxe {
+	return u.prepaid
 }
