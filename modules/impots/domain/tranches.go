@@ -4,12 +4,12 @@ type Tranches struct {
 	tranches []Tranche
 }
 
-func NewTranches(revenu Montant) Tranches {
-	t1, _ := NewTaxe(0)
-	t2, _ := NewTaxe(10)
-	t3, _ := NewTaxe(18)
-	t4, _ := NewTaxe(25)
-	t5, _ := NewTaxe(30)
+func NewTranches() Tranches {
+	t1, _ := NewTaxeRate(0)
+	t2, _ := NewTaxeRate(10)
+	t3, _ := NewTaxeRate(18)
+	t4, _ := NewTaxeRate(25)
+	t5, _ := NewTaxeRate(30)
 
 	return Tranches{
 		tranches: []Tranche{
@@ -22,10 +22,10 @@ func NewTranches(revenu Montant) Tranches {
 	}
 }
 
-func (t Tranches) CalculateTranches(revenue Montant) Montant {
-	totalTaxe := NewMontant(0)
+func (t Tranches) CalculateTaxe(revenue Revenu) Taxe {
+	totalTaxe := NewTaxe(0)
 	for _, t := range t.tranches {
-		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(revenue, &totalTaxe))
+		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(revenue).ToMontant()).ToTaxe()
 	}
 	return totalTaxe
 }

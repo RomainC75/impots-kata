@@ -5,10 +5,10 @@ import "fmt"
 type Tranche struct {
 	start  float64
 	mRange float64
-	taxe   Taxe
+	taxe   TaxeRate
 }
 
-func NewTranche(start float64, mRange float64, taxe Taxe) Tranche {
+func NewTranche(start float64, mRange float64, taxe TaxeRate) Tranche {
 	return Tranche{
 		start:  start,
 		mRange: mRange,
@@ -16,23 +16,23 @@ func NewTranche(start float64, mRange float64, taxe Taxe) Tranche {
 	}
 }
 
-func (t Tranche) CalculateTrancheTaxe(revenu Montant, totalTaxeMontant *Montant) Montant {
+func (t Tranche) CalculateTrancheTaxe(revenu Revenu) Taxe {
 	if revenu.ToFloat() < t.start {
-		return Montant{}
+		return Taxe{}
 	}
-	tranchePartToTaxe := t.ExtractTranchePart(revenu)
-	return t.taxe.CalculateTaxe(tranchePartToTaxe)
+	trancheTaxe := t.ExtractTranchePart(revenu)
+	return t.taxe.CalculateTaxe(Revenu(trancheTaxe))
 }
 
-func (t Tranche) ExtractTranchePart(revenu Montant) Montant {
+func (t Tranche) ExtractTranchePart(revenu Revenu) Taxe {
 	rangeToTaxe := revenu.ToFloat() - t.start
 
 	if t.mRange != -1 && rangeToTaxe > t.mRange {
 		t.DisplayTranche(t.mRange)
-		return NewMontant(t.mRange)
+		return NewTaxe(t.mRange)
 	}
 	t.DisplayTranche(rangeToTaxe)
-	return (NewMontant(rangeToTaxe))
+	return (NewTaxe(rangeToTaxe))
 }
 
 func (t Tranche) DisplayTranche(trancheToTaxe float64) {

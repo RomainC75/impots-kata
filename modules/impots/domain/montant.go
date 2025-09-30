@@ -29,3 +29,7 @@ func (m Montant) SubByValue(otherValue float64) Montant {
 func (m Montant) Add(other Montant) Montant {
 	return NewMontant(m.value + other.ToFloat())
 }
+
+func (m Montant) ToTaxe() Taxe {
+	return NewTaxe(m.value)
+}
