@@ -18,3 +18,12 @@ func (t Taxe) Add(other Taxe) Taxe {
 	otherMontant := other.ToMontant()
 	return t.Montant.Add(otherMontant).ToTaxe()
 }
+
+func (t Taxe) Sub(other Taxe) Taxe {
+	otherMontant := other.Montant
+	result := t.Montant.Sub(otherMontant)
+	if result.IsNegative() {
+		return NewTaxe(0)
+	}
+	return result.ToTaxe()
+}

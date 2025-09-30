@@ -30,6 +30,14 @@ func (m Montant) Add(other Montant) Montant {
 	return NewMontant(m.value + other.ToFloat())
 }
 
+func (m Montant) Sub(other Montant) Montant {
+	return NewMontant(m.value - other.ToFloat())
+}
+
 func (m Montant) ToTaxe() Taxe {
 	return NewTaxe(m.value)
+}
+
+func (m Montant) IsNegative() bool {
+	return m.value < 0
 }

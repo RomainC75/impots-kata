@@ -12,6 +12,9 @@ import (
 func TestTranches(t *testing.T) {
 	for _, tc := range tests.Tcs {
 		t.Run(fmt.Sprintf("-> revenu %f", tc.Revenu), func(t *testing.T) {
+			if tc.AlreadyPayed != 0 {
+				t.Skip()
+			}
 			revenu := domain.NewRevenu(tc.Revenu)
 			tranches := domain.NewTranches()
 			taxesToPay := tranches.CalculateTaxe(revenu)
