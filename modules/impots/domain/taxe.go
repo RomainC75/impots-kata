@@ -27,3 +27,12 @@ func (t Taxe) Sub(other Taxe) Taxe {
 	}
 	return result.ToTaxe()
 }
+
+func TaxeBaseMontantFromRevenu(revenu Revenu) Montant {
+	taxableThreshold := NewMontant(10_000)
+	base := revenu.Sub(taxableThreshold)
+	if base.IsNegative() {
+		return NewMontant(0)
+	}
+	return base
+}

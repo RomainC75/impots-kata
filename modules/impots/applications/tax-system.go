@@ -7,8 +7,14 @@ import (
 )
 
 type CalculateImpotsServiceRequest struct {
-	Payslip float64
+	Payslip domain.Revenu
 	User    uuid.UUID
+}
+
+type CalculateImpotsServiceResponse struct {
+	TaxeBase          float64
+	AlreadyPayedTaxes float64
+	ToBePayedTaxes    float64
 }
 
 type TaxSystem struct {
@@ -21,12 +27,16 @@ func NewTaxSystem(usersRepo domain.Users) *TaxSystem {
 	}
 }
 
-func (cis *TaxSystem) CalculateTax(cisRequest CalculateImpotsServiceRequest) (float64, error) {
+func (cis *TaxSystem) CalculateTax(cisRequest CalculateImpotsServiceRequest) (CalculateImpotsServiceResponse, error) {
 	foundUser, err := cis.usersRepo.GetUser(cisRequest.User)
 	if err != nil {
-		return 0, err
+		return CalculateImpotsServiceResponse{}, err
 	}
 
 	taxeCalculator := domain.NewTaxCalculator()
-	return taxeCalculator.CalculateTaxeToPay(foundUser, cisRequest.Payslip).ToFloat(), nil
+	return CalculateImpotsServiceResponse{
+		TaxeBase:          domain.TaxeBaseMontantFromRevenu(cisRequest.Payslip).ToFloat(),
+		AlreadyPayedTaxes: foundUser.GetPayedTaxe().ToFloat(),
+		ToBePayedTaxes:    taxeCalculator.CalculateTaxeToPay(foundUser, cisRequest.Payslip).ToFloat(),
+	}, nil
 }
