@@ -23,10 +23,10 @@ var tcs []TranchesTC = []TranchesTC{
 func TestTranches(t *testing.T) {
 	for _, tc := range tcs {
 		t.Run(fmt.Sprintf("-> revenu %f", tc.revenu), func(t *testing.T) {
-			revenu := domain.NewMontant(tc.revenu)
-			tranches := domain.NewTranches(revenu)
-			taxesToPay := tranches.CalculateTranches(revenu)
-			assert.Equal(t, domain.NewMontant(tc.expectedTaxeToPay), taxesToPay)
+			revenu := domain.NewRevenu(tc.revenu)
+			tranches := domain.NewTranches()
+			taxesToPay := tranches.CalculateTaxe(revenu)
+			assert.Equal(t, domain.NewTaxe(tc.expectedTaxeToPay), taxesToPay)
 		})
 	}
 }

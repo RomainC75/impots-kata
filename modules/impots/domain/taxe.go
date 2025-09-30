@@ -1,22 +1,15 @@
 package domain
 
-import "errors"
-
-var ErrNegativePercent = errors.New("percentage cannot be negative")
-
 type Taxe struct {
-	percent float64
+	Montant
 }
 
-func NewTaxe(percent float64) (Taxe, error) {
-	if percent < 0 {
-		return Taxe{}, ErrNegativePercent
-	}
+func NewTaxe(value float64) Taxe {
 	return Taxe{
-		percent: percent,
-	}, nil
+		Montant: NewMontant(value),
+	}
 }
 
-func (t Taxe) CalculateTaxe(montant Montant) Montant {
-	return montant.MultiplyByValue(t.percent / 100)
+func (t Taxe) ToMontant() Montant {
+	return t.Montant
 }
