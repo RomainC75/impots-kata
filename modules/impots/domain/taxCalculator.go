@@ -6,10 +6,9 @@ func NewTaxCalculator() TaxCalculator {
 	return TaxCalculator{}
 }
 
-func (tc TaxCalculator) CalculateTaxeToPay(user User, paySlip float64) Taxe {
+func (tc TaxCalculator) CalculateTaxeToPay(user User, paySlip Revenu) Taxe {
 	tranches := NewTranches()
-	revenu := NewRevenu(paySlip)
-	taxe := tranches.CalculateTaxe(revenu)
+	taxe := tranches.CalculateTaxe(paySlip)
 
 	return taxe.Sub(user.payedTaxe)
 }

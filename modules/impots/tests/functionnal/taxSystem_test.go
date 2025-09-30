@@ -3,6 +3,7 @@ package functionnal
 import (
 	"fmt"
 	"impots/modules/impots/applications"
+	"impots/modules/impots/domain"
 	"impots/modules/impots/tests"
 	"testing"
 
@@ -15,11 +16,12 @@ func TestTaxSystem(t *testing.T) {
 			taxSystem := taxSystemTestDriver(tc.AlreadyPayed)
 
 			cisRequest := applications.CalculateImpotsServiceRequest{
-				Payslip: tc.Revenu,
+				Payslip: domain.NewRevenu(tc.Revenu),
 			}
 			response, err := taxSystem.CalculateTax(cisRequest)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.ExpectedTaxeToPay, response)
+			assert.Equal(t, tc.ExpectedTaxeToPay, response.ToBePayedTaxes)
+			assert.Equal(t, tc.ExpectedTaxeBase, response.TaxeBase)
 		})
 
 	}

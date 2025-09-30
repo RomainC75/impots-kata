@@ -16,3 +16,7 @@ func NewUser(uuid uuid.UUID) *User {
 func (u *User) PayTaxe(taxe Taxe) {
 	u.payedTaxe = u.payedTaxe.Add(taxe)
 }
+
+func (u *User) GetPayedTaxe() Taxe {
+	return u.payedTaxe
+}
