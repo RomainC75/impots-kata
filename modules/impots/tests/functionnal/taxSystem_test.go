@@ -12,11 +12,13 @@ import (
 func TestTaxSystem(t *testing.T) {
 	for _, tc := range tests.Tcs {
 		t.Run(fmt.Sprintf("taxSyste %f -> %f\n", tc.Revenu, tc.ExpectedTaxeToPay), func(t *testing.T) {
-			taxSystem := applications.NewTaxSystem()
+			taxSystem := taxSystemTestDriver(tc.AlreadyPayed)
+
 			cisRequest := applications.CalculateImpotsServiceRequest{
 				Payslip: tc.Revenu,
 			}
-			response := taxSystem.CalculateTax(cisRequest)
+			response, err := taxSystem.CalculateTax(cisRequest)
+			assert.Nil(t, err)
 			assert.Equal(t, tc.ExpectedTaxeToPay, response)
 		})
 
