@@ -25,7 +25,7 @@ func NewTranches() Tranches {
 func (t Tranches) CalculateTaxe(revenue Revenu) Taxe {
 	totalTaxe := NewTaxe(0)
 	for _, t := range t.tranches {
-		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(revenue).ToMontant()).ToTaxe()
+		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(revenue))
 	}
 	return totalTaxe
 }
