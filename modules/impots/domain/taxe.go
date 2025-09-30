@@ -13,3 +13,8 @@ func NewTaxe(value float64) Taxe {
 func (t Taxe) ToMontant() Montant {
 	return t.Montant
 }
+
+func (t Taxe) Add(other Taxe) Taxe {
+	otherMontant := other.ToMontant()
+	return t.Montant.Add(otherMontant).ToTaxe()
+}
