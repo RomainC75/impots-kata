@@ -1,4 +1,4 @@
-package domain
+package tranche_domain
 
 import (
 	"fmt"

@@ -4,6 +4,7 @@ import (
 	money_domain "impots/modules/impots/domain/money"
 	reduction_domain "impots/modules/impots/domain/reduction"
 	taxe_domain "impots/modules/impots/domain/taxe"
+	tranche_domain "impots/modules/impots/domain/tranches"
 )
 
 type TaxCalculator struct {
@@ -21,7 +22,7 @@ func NewTaxCalculator(prepayed taxe_domain.Taxe, paySlip money_domain.Revenu, re
 }
 
 func (tc TaxCalculator) CalculateTaxeToPay() taxe_domain.Taxe {
-	tranches := NewTranches()
+	tranches := tranche_domain.NewTranches()
 	// brut
 	taxe := tranches.CalculateTaxe(tc.paySlip)
 	// - prepayed
