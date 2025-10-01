@@ -22,6 +22,10 @@ func (m Montant) IsLess(other Montant) bool {
 	return m.value < other.value
 }
 
+func (m Montant) IsMore(other Montant) bool {
+	return m.value < other.value
+}
+
 func (m Montant) SubByValue(otherValue float64) Montant {
 	return NewMontant(m.value - otherValue)
 }

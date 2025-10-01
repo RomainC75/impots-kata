@@ -13,10 +13,11 @@ type TranchesTC struct {
 }
 
 var (
-	tenPercent    = reduction_domain.ReductionParameters{"PERCENT", 10}
-	twentyPercent = reduction_domain.ReductionParameters{"PERCENT", 20}
-	minus200      = reduction_domain.ReductionParameters{"FIXE", 200}
-	minus1000     = reduction_domain.ReductionParameters{"FIXE", 1000}
+	tenPercent         = reduction_domain.ReductionParameters{"PERCENT", 10, 0}
+	twentyPercent      = reduction_domain.ReductionParameters{"PERCENT", 20, 0}
+	minus200           = reduction_domain.ReductionParameters{"FIXE", 200, 0}
+	minus1000          = reduction_domain.ReductionParameters{"FIXE", 1000, 0}
+	minus1000forRiches = reduction_domain.ReductionParameters{"FIXE", 1000, 30_000}
 )
 
 var Tcs []TranchesTC = []TranchesTC{
@@ -39,6 +40,7 @@ var Tcs []TranchesTC = []TranchesTC{
 	{20_000, 600, []reduction_domain.ReductionParameters{tenPercent, twentyPercent, minus200}, 120, 10_000},
 
 	// edge cases
-	{15_000, 0, []reduction_domain.ReductionParameters{minus1000, tenPercent}, 0, 5_000},
+	{15_000, 0, []reduction_domain.ReductionParameters{minus1000, tenPercent, minus1000forRiches}, 0, 5_000},
+	{55_000, 0, []reduction_domain.ReductionParameters{minus1000, tenPercent, minus1000forRiches}, 6370, 45_000},
 	// {15_000, 0, []reduction_domain.ReductionParameters{tenPercent, twentyPercent, tenPercent, twentyPercent}, 0, 5_000},
 }

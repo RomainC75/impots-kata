@@ -37,7 +37,7 @@ func (cis *TaxSystem) CalculateTax(cisRequest CalculateImpotsServiceRequest) (Ca
 	if err != nil {
 		return CalculateImpotsServiceResponse{}, err
 	}
-	reductionHandler, err := reduction_domain.NewReductionsHandler(cisRequest.Reductions)
+	reductionHandler, err := reduction_domain.NewReductionsHandler(cisRequest.Payslip, cisRequest.Reductions)
 	if err != nil {
 		return CalculateImpotsServiceResponse{}, err
 	}
