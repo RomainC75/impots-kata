@@ -13,6 +13,6 @@ func Serve(mux *http.ServeMux) {
 
 	err := server.ListenAndServe()
 	if err != nil {
-		slog.Error("server error : ", err)
+		slog.Error("server error : ", err.Error())
 	}
 }

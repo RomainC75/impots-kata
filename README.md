@@ -116,8 +116,8 @@ De plus, cette réduction doit-être appliquée en premier, avant les réduction
 Les déductions d'impôts sont conditionnelles. 
 
 - Certaines déductions s'appliquent en toutes circonstances
-- D'autres ne s'appliquent que si le montant à payer est supérieur à un seuil
-- D'autres uniquement si la base imposable est inférieure à un seuil
+- D'autres uniquement si la base imposable est inférieure à un seuil - en premier ?
+- D'autres ne s'appliquent que si la taxe à payer est supérieur à un seuil - (à appliquer en dernier)
 
 ## Niveau 5 - Plafonnement des réductions d'impôts
 

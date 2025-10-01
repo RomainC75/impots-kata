@@ -2,11 +2,14 @@ package reduction_domain
 
 import (
 	"errors"
-	money_domain "impots/internal/modules/impots/domain/money"
-	taxe_domain "impots/internal/modules/impots/domain/taxe"
+	money_d "impots/internal/modules/impots/domain/money"
+	taxe_d "impots/internal/modules/impots/domain/taxe"
 )
 
-var ErrInvalidReductionType = errors.New("invalid reduction type (FIXE, PERCENT)")
+var (
+	ErrInvalidReductionType         = errors.New("invalid reduction type (FIXE, PERCENT)")
+	MaxReduction            float64 = 1_271
+)
 
 type ReductionParameters struct {
 	RType          string
@@ -18,7 +21,7 @@ type ReductionsHandler struct {
 	reductions []Reduction
 }
 
-func NewReductionsHandler(revenu money_domain.Revenu, reductionParams []ReductionParameters) (ReductionsHandler, error) {
+func NewReductionsHandler(revenu money_d.Revenu, reductionParams []ReductionParameters) (ReductionsHandler, error) {
 	filterReductionParams := filterLowestPercents(revenu, reductionParams)
 	reductions, err := reductionsFactory(filterReductionParams)
 	if err != nil {
@@ -29,22 +32,33 @@ func NewReductionsHandler(revenu money_domain.Revenu, reductionParams []Reductio
 	}, nil
 }
 
-func (rh ReductionsHandler) ApplyReductions(revenu money_domain.Revenu, taxe taxe_domain.Taxe) taxe_domain.Taxe {
+func (rh ReductionsHandler) ApplyReductions(revenu money_d.Revenu, taxe taxe_d.Taxe) taxe_d.Taxe {
+	buffTaxe := taxe
+
 	for _, r := range rh.reductions {
-		taxe = r.Apply(revenu, taxe)
+		buffTaxe = r.Apply(revenu, buffTaxe)
 
 	}
-	return taxe
+	limitedReductionTaxe := limitReductionTaxe(taxe, buffTaxe)
+	return limitedReductionTaxe
 }
 
-func filterLowestPercents(revenu money_domain.Revenu, reductionParameters []ReductionParameters) []ReductionParameters {
+func limitReductionTaxe(preReductionTaxe taxe_d.Taxe, buffTaxe taxe_d.Taxe) taxe_d.Taxe {
+	totalTaxeReduction := preReductionTaxe.Sub(buffTaxe)
+	if totalTaxeReduction.IsMoreThan(money_d.NewMontant(MaxReduction)) {
+		return preReductionTaxe.Sub(taxe_d.NewTaxe(MaxReduction))
+	}
+	return buffTaxe
+}
+
+func filterLowestPercents(revenu money_d.Revenu, reductionParameters []ReductionParameters) []ReductionParameters {
 	biggestPercentIndex := findBiggestPercent(reductionParameters)
 	if biggestPercentIndex == -1 {
 		return reductionParameters
 	}
 	filteredReductions := make([]ReductionParameters, 0, len(reductionParameters)-1)
 	for i, rp := range reductionParameters {
-		if revenu.IsLess(money_domain.NewMontant(rp.ApplicableFrom)) {
+		if revenu.IsLessThan(money_d.NewMontant(rp.ApplicableFrom)) {
 			continue
 		} else if rp.RType == PERCENT_TAX_REDUCTION_TYPE && i != biggestPercentIndex {
 			continue
@@ -76,14 +90,14 @@ func reductionsFactory(reductionParams []ReductionParameters) ([]Reduction, erro
 
 		if r.RType == FIXE_REDUCTION_TYPE {
 
-			fixedReduction, err := NewFixedReduction(r.Value, money_domain.NewRevenu(r.ApplicableFrom))
+			fixedReduction, err := NewFixedReduction(r.Value, money_d.NewRevenu(r.ApplicableFrom))
 			if err != nil {
 				return []Reduction{}, err
 			}
 			reductions = append(reductions, fixedReduction)
 		} else if r.RType == PERCENT_TAX_REDUCTION_TYPE {
 
-			percentReduction, err := NewPercentTaxReduction(r.Value, money_domain.NewRevenu(r.ApplicableFrom))
+			percentReduction, err := NewPercentTaxReduction(r.Value, money_d.NewRevenu(r.ApplicableFrom))
 			if err != nil {
 				return []Reduction{}, err
 			}
