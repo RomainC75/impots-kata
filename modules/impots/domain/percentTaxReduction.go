@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	taxe_domain "impots/modules/impots/domain/taxe"
 )
 
 var (
@@ -22,7 +23,7 @@ func NewPercentTaxReduction(reductionRate float64) (PercentTaxReduction, error) 
 	}, nil
 }
 
-func (fr PercentTaxReduction) Apply(taxe Taxe) Taxe {
+func (fr PercentTaxReduction) Apply(taxe taxe_domain.Taxe) taxe_domain.Taxe {
 	rate := taxe.MultiplyByValue(fr.reductionRate / 100)
 	return taxe.Sub(rate)
 }

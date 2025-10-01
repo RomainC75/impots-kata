@@ -2,6 +2,7 @@ package units
 
 import (
 	"impots/modules/impots/domain"
+	taxe_domain "impots/modules/impots/domain/taxe"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -57,7 +58,7 @@ func TestReductions(t *testing.T) {
 			reductions, err := domain.NewReductionsHandler(tc.Reductions)
 			assert.Nil(t, err)
 
-			taxe := domain.NewTaxe(tc.InitialTaxe)
+			taxe := taxe_domain.NewTaxe(tc.InitialTaxe)
 			taxe = reductions.ApplyReductions(taxe)
 
 			assert.Equal(t, tc.ExpectedTaxe, taxe.ToFloat())

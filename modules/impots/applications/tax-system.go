@@ -3,6 +3,7 @@ package applications
 import (
 	"impots/modules/impots/domain"
 	money_domain "impots/modules/impots/domain/money"
+	taxe_domain "impots/modules/impots/domain/taxe"
 
 	"github.com/google/uuid"
 )
@@ -42,7 +43,7 @@ func (cis *TaxSystem) CalculateTax(cisRequest CalculateImpotsServiceRequest) (Ca
 	totalTaxe := taxeCalculator.CalculateTaxeToPay()
 
 	return CalculateImpotsServiceResponse{
-		TaxeBase:          domain.TaxeBaseMontantFromRevenu(cisRequest.Payslip).ToFloat(),
+		TaxeBase:          taxe_domain.TaxeBaseMontantFromRevenu(cisRequest.Payslip).ToFloat(),
 		AlreadyPayedTaxes: foundUser.Getprepaid().ToFloat(),
 		ToBePayedTaxes:    totalTaxe.ToFloat(),
 	}, nil
