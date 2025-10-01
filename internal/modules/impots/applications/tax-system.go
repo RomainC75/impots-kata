@@ -11,9 +11,9 @@ import (
 )
 
 type CalculateImpotsServiceRequest struct {
-	Payslip    money_domain.Revenu
-	User       uuid.UUID
-	Reductions []reduction_domain.ReductionParameters
+	RevenuSalarie money_domain.Revenu
+	User          uuid.UUID
+	Reductions    []reduction_domain.ReductionParameters
 }
 
 type CalculateImpotsServiceResponse struct {
@@ -37,15 +37,15 @@ func (cis *TaxSystem) CalculateTax(cisRequest CalculateImpotsServiceRequest) (Ca
 	if err != nil {
 		return CalculateImpotsServiceResponse{}, err
 	}
-	reductionHandler, err := reduction_domain.NewReductionsHandler(cisRequest.Payslip, cisRequest.Reductions)
+	reductionHandler, err := reduction_domain.NewReductionsHandler(cisRequest.RevenuSalarie, cisRequest.Reductions)
 	if err != nil {
 		return CalculateImpotsServiceResponse{}, err
 	}
-	taxeCalculator := domain.NewTaxCalculator(foundUser.Getprepaid(), cisRequest.Payslip, reductionHandler)
+	taxeCalculator := domain.NewTaxCalculator(foundUser.Getprepaid(), cisRequest.RevenuSalarie, reductionHandler)
 	totalTaxe := taxeCalculator.CalculateTaxeToPay()
 
 	return CalculateImpotsServiceResponse{
-		TaxeBase:          taxe_domain.TaxeBaseMontantFromRevenu(cisRequest.Payslip).ToFloat(),
+		TaxeBase:          taxe_domain.TaxeBaseMontantFromRevenu(cisRequest.RevenuSalarie).ToFloat(),
 		AlreadyPayedTaxes: foundUser.Getprepaid().ToFloat(),
 		ToBePayedTaxes:    totalTaxe.ToFloat(),
 	}, nil

@@ -9,25 +9,25 @@ import (
 
 type TaxCalculator struct {
 	prepayed          taxe_domain.Taxe
-	paySlip           money_domain.Revenu
+	Revenu            money_domain.Revenu
 	reductionsHandler reduction_domain.ReductionsHandler
 }
 
-func NewTaxCalculator(prepayed taxe_domain.Taxe, paySlip money_domain.Revenu, reductionHandler reduction_domain.ReductionsHandler) TaxCalculator {
+func NewTaxCalculator(prepayed taxe_domain.Taxe, Revenu money_domain.Revenu, reductionHandler reduction_domain.ReductionsHandler) TaxCalculator {
 	return TaxCalculator{
 		prepayed:          prepayed,
-		paySlip:           paySlip,
+		Revenu:            Revenu,
 		reductionsHandler: reductionHandler,
 	}
 }
 
 func (tc TaxCalculator) CalculateTaxeToPay() taxe_domain.Taxe {
-	tranches := tranche_domain.NewTranches(tc.paySlip)
+	tranches := tranche_domain.NewTranches(tc.Revenu)
 	// brut
 	taxe := tranches.CalculateTaxe()
 	// - prepayed
 	taxe = taxe.Sub(tc.prepayed)
 	// - reductions
-	taxe = tc.reductionsHandler.ApplyReductions(tc.paySlip, taxe)
+	taxe = tc.reductionsHandler.ApplyReductions(tc.Revenu, taxe)
 	return taxe
 }
