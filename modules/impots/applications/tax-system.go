@@ -3,6 +3,7 @@ package applications
 import (
 	"impots/modules/impots/domain"
 	money_domain "impots/modules/impots/domain/money"
+	reduction_domain "impots/modules/impots/domain/reduction"
 	taxe_domain "impots/modules/impots/domain/taxe"
 
 	"github.com/google/uuid"
@@ -11,7 +12,7 @@ import (
 type CalculateImpotsServiceRequest struct {
 	Payslip    money_domain.Revenu
 	User       uuid.UUID
-	Reductions []domain.ReductionParameters
+	Reductions []reduction_domain.ReductionParameters
 }
 
 type CalculateImpotsServiceResponse struct {
@@ -35,7 +36,7 @@ func (cis *TaxSystem) CalculateTax(cisRequest CalculateImpotsServiceRequest) (Ca
 	if err != nil {
 		return CalculateImpotsServiceResponse{}, err
 	}
-	reductionHandler, err := domain.NewReductionsHandler(cisRequest.Reductions)
+	reductionHandler, err := reduction_domain.NewReductionsHandler(cisRequest.Reductions)
 	if err != nil {
 		return CalculateImpotsServiceResponse{}, err
 	}
