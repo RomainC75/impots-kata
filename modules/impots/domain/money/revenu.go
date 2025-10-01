@@ -1,4 +1,4 @@
-package domain
+package money_domain
 
 type Revenu struct {
 	Montant

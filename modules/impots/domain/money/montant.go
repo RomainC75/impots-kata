@@ -1,4 +1,4 @@
-package domain
+package money_domain
 
 type Montant struct {
 	value float64
@@ -34,9 +34,9 @@ func (m Montant) Sub(other Montant) Montant {
 	return NewMontant(m.value - other.ToFloat())
 }
 
-func (m Montant) ToTaxe() Taxe {
-	return NewTaxe(m.value)
-}
+// func (m Montant) ToTaxe() Taxe {
+// 	return NewTaxe(m.value)
+// }
 
 func (m Montant) IsNegative() bool {
 	return m.value < 0

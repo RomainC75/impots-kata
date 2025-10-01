@@ -3,7 +3,7 @@ package functionnal
 import (
 	"fmt"
 	"impots/modules/impots/applications"
-	"impots/modules/impots/domain"
+	money_domain "impots/modules/impots/domain/money"
 	"impots/modules/impots/tests"
 	"testing"
 
@@ -16,7 +16,7 @@ func TestTaxSystem(t *testing.T) {
 			taxSystem := taxSystemTestDriver(tc.AlreadyPayed)
 
 			cisRequest := applications.CalculateImpotsServiceRequest{
-				Payslip:    domain.NewRevenu(tc.Revenu),
+				Payslip:    money_domain.NewRevenu(tc.Revenu),
 				Reductions: tc.Reductions,
 			}
 			response, err := taxSystem.CalculateTax(cisRequest)

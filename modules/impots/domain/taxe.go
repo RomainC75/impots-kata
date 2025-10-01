@@ -1,22 +1,30 @@
 package domain
 
+import money_domain "impots/modules/impots/domain/money"
+
 type Taxe struct {
-	Montant
+	money_domain.Montant
 }
 
 func NewTaxe(value float64) Taxe {
 	return Taxe{
-		Montant: NewMontant(value),
+		Montant: money_domain.NewMontant(value),
 	}
 }
 
-func (t Taxe) ToMontant() Montant {
+func NewTaxeFromMontant(montant money_domain.Montant) Taxe {
+	return Taxe{
+		Montant: montant,
+	}
+}
+
+func (t Taxe) ToMontant() money_domain.Montant {
 	return t.Montant
 }
 
 func (t Taxe) Add(other Taxe) Taxe {
 	otherMontant := other.ToMontant()
-	return t.Montant.Add(otherMontant).ToTaxe()
+	return NewTaxeFromMontant(t.Montant.Add(otherMontant))
 }
 
 func (t Taxe) Sub(other Taxe) Taxe {
@@ -25,18 +33,18 @@ func (t Taxe) Sub(other Taxe) Taxe {
 	if result.IsNegative() {
 		return NewTaxe(0)
 	}
-	return result.ToTaxe()
+	return NewTaxeFromMontant(result)
 }
 
 func (t Taxe) MultiplyByValue(value float64) Taxe {
-	return NewTaxe(t.value * value)
+	return NewTaxe(t.ToFloat() * value)
 }
 
-func TaxeBaseMontantFromRevenu(revenu Revenu) Montant {
-	taxableThreshold := NewMontant(10_000)
+func TaxeBaseMontantFromRevenu(revenu money_domain.Revenu) money_domain.Montant {
+	taxableThreshold := money_domain.NewMontant(10_000)
 	base := revenu.Sub(taxableThreshold)
 	if base.IsNegative() {
-		return NewMontant(0)
+		return money_domain.NewMontant(0)
 	}
 	return base
 }
