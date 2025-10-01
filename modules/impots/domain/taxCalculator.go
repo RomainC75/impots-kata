@@ -1,12 +1,14 @@
 package domain
 
+import money_domain "impots/modules/impots/domain/money"
+
 type TaxCalculator struct {
 	prepayed          Taxe
-	paySlip           Revenu
+	paySlip           money_domain.Revenu
 	reductionsHandler ReductionsHandler
 }
 
-func NewTaxCalculator(prepayed Taxe, paySlip Revenu, reductionHandler ReductionsHandler) TaxCalculator {
+func NewTaxCalculator(prepayed Taxe, paySlip money_domain.Revenu, reductionHandler ReductionsHandler) TaxCalculator {
 	return TaxCalculator{
 		prepayed:          prepayed,
 		paySlip:           paySlip,

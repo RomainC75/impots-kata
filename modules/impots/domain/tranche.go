@@ -1,6 +1,9 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+	money_domain "impots/modules/impots/domain/money"
+)
 
 type Tranche struct {
 	start  float64
@@ -16,15 +19,15 @@ func NewTranche(start float64, mRange float64, taxe TaxeRate) Tranche {
 	}
 }
 
-func (t Tranche) CalculateTrancheTaxe(revenu Revenu) Taxe {
+func (t Tranche) CalculateTrancheTaxe(revenu money_domain.Revenu) Taxe {
 	if revenu.ToFloat() < t.start {
 		return Taxe{}
 	}
 	trancheTaxe := t.ExtractTranchePart(revenu)
-	return t.taxe.CalculateTaxe(Revenu(trancheTaxe))
+	return t.taxe.CalculateTaxe(money_domain.Revenu(trancheTaxe))
 }
 
-func (t Tranche) ExtractTranchePart(revenu Revenu) Taxe {
+func (t Tranche) ExtractTranchePart(revenu money_domain.Revenu) Taxe {
 	rangeToTaxe := revenu.ToFloat() - t.start
 
 	if t.mRange != -1 && rangeToTaxe > t.mRange {

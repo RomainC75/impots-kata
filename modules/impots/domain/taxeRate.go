@@ -1,6 +1,9 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+	money_domain "impots/modules/impots/domain/money"
+)
 
 var ErrNegativePercent = errors.New("percentage cannot be negative")
 
@@ -17,7 +20,7 @@ func NewTaxeRate(percent float64) (TaxeRate, error) {
 	}, nil
 }
 
-func (t TaxeRate) CalculateTaxe(revenu Revenu) Taxe {
+func (t TaxeRate) CalculateTaxe(revenu money_domain.Revenu) Taxe {
 	taxeMontant := revenu.MultiplyByValue(t.percent / 100)
-	return taxeMontant.ToTaxe()
+	return NewTaxeFromMontant(taxeMontant)
 }

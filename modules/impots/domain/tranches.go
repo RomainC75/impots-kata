@@ -1,5 +1,7 @@
 package domain
 
+import money_domain "impots/modules/impots/domain/money"
+
 type Tranches struct {
 	tranches []Tranche
 }
@@ -22,7 +24,7 @@ func NewTranches() Tranches {
 	}
 }
 
-func (t Tranches) CalculateTaxe(revenue Revenu) Taxe {
+func (t Tranches) CalculateTaxe(revenue money_domain.Revenu) Taxe {
 	totalTaxe := NewTaxe(0)
 	for _, t := range t.tranches {
 		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(revenue))

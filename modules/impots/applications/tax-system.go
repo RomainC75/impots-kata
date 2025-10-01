@@ -2,12 +2,13 @@ package applications
 
 import (
 	"impots/modules/impots/domain"
+	money_domain "impots/modules/impots/domain/money"
 
 	"github.com/google/uuid"
 )
 
 type CalculateImpotsServiceRequest struct {
-	Payslip    domain.Revenu
+	Payslip    money_domain.Revenu
 	User       uuid.UUID
 	Reductions []domain.ReductionParameters
 }
