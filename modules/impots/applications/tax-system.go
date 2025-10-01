@@ -5,6 +5,7 @@ import (
 	money_domain "impots/modules/impots/domain/money"
 	reduction_domain "impots/modules/impots/domain/reduction"
 	taxe_domain "impots/modules/impots/domain/taxe"
+	user_domain "impots/modules/impots/domain/users"
 
 	"github.com/google/uuid"
 )
@@ -22,10 +23,10 @@ type CalculateImpotsServiceResponse struct {
 }
 
 type TaxSystem struct {
-	usersRepo domain.Users
+	usersRepo user_domain.Users
 }
 
-func NewTaxSystem(usersRepo domain.Users) *TaxSystem {
+func NewTaxSystem(usersRepo user_domain.Users) *TaxSystem {
 	return &TaxSystem{
 		usersRepo: usersRepo,
 	}
