@@ -29,6 +29,7 @@ var Tcs []TranchesTC = []TranchesTC{
 	{40_000, 0, []reduction_domain.ReductionParameters{}, 5300, 30_000},
 	{50_000, 0, []reduction_domain.ReductionParameters{}, 7800, 40_000},
 	{60_000, 0, []reduction_domain.ReductionParameters{}, 10_800, 50_000},
+	{55_000, 0, []reduction_domain.ReductionParameters{}, 9_300, 45_000},
 	// prepayed
 	{10_000, 300, []reduction_domain.ReductionParameters{}, 0, 0},
 	{15_000, 200, []reduction_domain.ReductionParameters{}, 300, 5_000},
@@ -41,6 +42,6 @@ var Tcs []TranchesTC = []TranchesTC{
 
 	// edge cases
 	{15_000, 0, []reduction_domain.ReductionParameters{minus1000, tenPercent, minus1000forRiches}, 0, 5_000},
-	{55_000, 0, []reduction_domain.ReductionParameters{minus1000, tenPercent, minus1000forRiches}, 6370, 45_000},
+	{55_000, 0, []reduction_domain.ReductionParameters{minus1000, tenPercent, minus1000forRiches}, 8029, 45_000},
 	// {15_000, 0, []reduction_domain.ReductionParameters{tenPercent, twentyPercent, tenPercent, twentyPercent}, 0, 5_000},
 }

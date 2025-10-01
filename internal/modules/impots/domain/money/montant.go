@@ -18,12 +18,12 @@ func (m Montant) MultiplyByValue(factor float64) Montant {
 	return NewMontant(m.value * factor)
 }
 
-func (m Montant) IsLess(other Montant) bool {
+func (m Montant) IsLessThan(other Montant) bool {
 	return m.value < other.value
 }
 
-func (m Montant) IsMore(other Montant) bool {
-	return m.value < other.value
+func (m Montant) IsMoreThan(other Montant) bool {
+	return m.value > other.value
 }
 
 func (m Montant) SubByValue(otherValue float64) Montant {
