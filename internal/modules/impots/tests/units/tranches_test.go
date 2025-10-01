@@ -30,8 +30,8 @@ func TestTranches(t *testing.T) {
 	for _, tc := range tranchesTC {
 		t.Run(fmt.Sprintf("-> revenu %f", tc.Revenu), func(t *testing.T) {
 			revenu := money_domain.NewRevenu(tc.Revenu)
-			tranches := tranche_domain.NewTranches()
-			taxesToPay := tranches.CalculateTaxe(revenu)
+			tranches := tranche_domain.NewTranches(revenu)
+			taxesToPay := tranches.CalculateTaxe()
 			assert.Equal(t, taxe_domain.NewTaxe(tc.ExpectedTaxeToPay), taxesToPay)
 		})
 	}

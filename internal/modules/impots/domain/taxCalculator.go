@@ -22,12 +22,12 @@ func NewTaxCalculator(prepayed taxe_domain.Taxe, paySlip money_domain.Revenu, re
 }
 
 func (tc TaxCalculator) CalculateTaxeToPay() taxe_domain.Taxe {
-	tranches := tranche_domain.NewTranches()
+	tranches := tranche_domain.NewTranches(tc.paySlip)
 	// brut
-	taxe := tranches.CalculateTaxe(tc.paySlip)
+	taxe := tranches.CalculateTaxe()
 	// - prepayed
 	taxe = taxe.Sub(tc.prepayed)
 	// - reductions
-	taxe = tc.reductionsHandler.ApplyReductions(taxe)
+	taxe = tc.reductionsHandler.ApplyReductions(tc.paySlip, taxe)
 	return taxe
 }

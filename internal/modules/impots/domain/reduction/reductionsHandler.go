@@ -2,22 +2,24 @@ package reduction_domain
 
 import (
 	"errors"
+	money_domain "impots/internal/modules/impots/domain/money"
 	taxe_domain "impots/internal/modules/impots/domain/taxe"
 )
 
 var ErrInvalidReductionType = errors.New("invalid reduction type (FIXE, PERCENT)")
 
 type ReductionParameters struct {
-	RType string
-	Value float64
+	RType          string
+	Value          float64
+	ApplicableFrom float64
 }
 
 type ReductionsHandler struct {
 	reductions []Reduction
 }
 
-func NewReductionsHandler(reductionParams []ReductionParameters) (ReductionsHandler, error) {
-	filterReductionParams := filterLowestPercents(reductionParams)
+func NewReductionsHandler(revenu money_domain.Revenu, reductionParams []ReductionParameters) (ReductionsHandler, error) {
+	filterReductionParams := filterLowestPercents(revenu, reductionParams)
 	reductions, err := reductionsFactory(filterReductionParams)
 	if err != nil {
 		return ReductionsHandler{}, err
@@ -27,22 +29,24 @@ func NewReductionsHandler(reductionParams []ReductionParameters) (ReductionsHand
 	}, nil
 }
 
-func (rh ReductionsHandler) ApplyReductions(taxe taxe_domain.Taxe) taxe_domain.Taxe {
+func (rh ReductionsHandler) ApplyReductions(revenu money_domain.Revenu, taxe taxe_domain.Taxe) taxe_domain.Taxe {
 	for _, r := range rh.reductions {
-		taxe = r.Apply(taxe)
+		taxe = r.Apply(revenu, taxe)
 
 	}
 	return taxe
 }
 
-func filterLowestPercents(reductionParameters []ReductionParameters) []ReductionParameters {
+func filterLowestPercents(revenu money_domain.Revenu, reductionParameters []ReductionParameters) []ReductionParameters {
 	biggestPercentIndex := findBiggestPercent(reductionParameters)
 	if biggestPercentIndex == -1 {
 		return reductionParameters
 	}
 	filteredReductions := make([]ReductionParameters, 0, len(reductionParameters)-1)
 	for i, rp := range reductionParameters {
-		if rp.RType == PERCENT_TAX_REDUCTION_TYPE && i != biggestPercentIndex {
+		if revenu.IsLess(money_domain.NewMontant(rp.ApplicableFrom)) {
+			continue
+		} else if rp.RType == PERCENT_TAX_REDUCTION_TYPE && i != biggestPercentIndex {
 			continue
 		} else if i == biggestPercentIndex {
 			filteredReductions = append([]ReductionParameters{rp}, filteredReductions...)
@@ -72,14 +76,14 @@ func reductionsFactory(reductionParams []ReductionParameters) ([]Reduction, erro
 
 		if r.RType == FIXE_REDUCTION_TYPE {
 
-			fixedReduction, err := NewFixedReduction(r.Value)
+			fixedReduction, err := NewFixedReduction(r.Value, money_domain.NewRevenu(r.ApplicableFrom))
 			if err != nil {
 				return []Reduction{}, err
 			}
 			reductions = append(reductions, fixedReduction)
 		} else if r.RType == PERCENT_TAX_REDUCTION_TYPE {
 
-			percentReduction, err := NewPercentTaxReduction(r.Value)
+			percentReduction, err := NewPercentTaxReduction(r.Value, money_domain.NewRevenu(r.ApplicableFrom))
 			if err != nil {
 				return []Reduction{}, err
 			}
