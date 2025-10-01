@@ -1,16 +1,16 @@
 package infrastructure
 
 import (
-	"impots/modules/impots/domain"
+	user_domain "impots/modules/impots/domain/users"
 
 	"github.com/google/uuid"
 )
 
 type InMemoryUsers struct {
-	ExpectedUser domain.User
+	ExpectedUser user_domain.User
 }
 
-func (imu *InMemoryUsers) GetUser(userId uuid.UUID) (domain.User, error) {
+func (imu *InMemoryUsers) GetUser(userId uuid.UUID) (user_domain.User, error) {
 	return imu.ExpectedUser, nil
 }
 
