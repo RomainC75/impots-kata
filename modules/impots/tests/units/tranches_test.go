@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"impots/modules/impots/domain"
 	money_domain "impots/modules/impots/domain/money"
+	taxe_domain "impots/modules/impots/domain/taxe"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,7 @@ func TestTranches(t *testing.T) {
 			revenu := money_domain.NewRevenu(tc.Revenu)
 			tranches := domain.NewTranches()
 			taxesToPay := tranches.CalculateTaxe(revenu)
-			assert.Equal(t, domain.NewTaxe(tc.ExpectedTaxeToPay), taxesToPay)
+			assert.Equal(t, taxe_domain.NewTaxe(tc.ExpectedTaxeToPay), taxesToPay)
 		})
 	}
 }

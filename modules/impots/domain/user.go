@@ -1,10 +1,14 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	taxe_domain "impots/modules/impots/domain/taxe"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
 	id      uuid.UUID
-	prepaid Taxe
+	prepaid taxe_domain.Taxe
 }
 
 func NewUser(uuid uuid.UUID) *User {
@@ -13,10 +17,10 @@ func NewUser(uuid uuid.UUID) *User {
 	}
 }
 
-func (u *User) PayTaxe(taxe Taxe) {
+func (u *User) PayTaxe(taxe taxe_domain.Taxe) {
 	u.prepaid = u.prepaid.Add(taxe)
 }
 
-func (u *User) Getprepaid() Taxe {
+func (u *User) Getprepaid() taxe_domain.Taxe {
 	return u.prepaid
 }

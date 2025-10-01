@@ -1,4 +1,4 @@
-package domain
+package taxe_domain
 
 import (
 	"errors"

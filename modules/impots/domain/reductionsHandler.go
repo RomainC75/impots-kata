@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	taxe_domain "impots/modules/impots/domain/taxe"
 )
 
 var ErrInvalidReductionType = errors.New("invalid reduction type (FIXE, PERCENT)")
@@ -27,7 +28,7 @@ func NewReductionsHandler(reductionParams []ReductionParameters) (ReductionsHand
 	}, nil
 }
 
-func (rh ReductionsHandler) ApplyReductions(taxe Taxe) Taxe {
+func (rh ReductionsHandler) ApplyReductions(taxe taxe_domain.Taxe) taxe_domain.Taxe {
 	for _, r := range rh.reductions {
 		taxe = r.Apply(taxe)
 

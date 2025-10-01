@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	taxe_domain "impots/modules/impots/domain/taxe"
 )
 
 var (
@@ -10,7 +11,7 @@ var (
 )
 
 type FixeReduction struct {
-	fixedTax Taxe
+	fixedTax taxe_domain.Taxe
 }
 
 func NewFixedReduction(fixedTax float64) (FixeReduction, error) {
@@ -18,10 +19,10 @@ func NewFixedReduction(fixedTax float64) (FixeReduction, error) {
 		return FixeReduction{}, ErrInvalidFixedReduction
 	}
 	return FixeReduction{
-		fixedTax: NewTaxe(fixedTax),
+		fixedTax: taxe_domain.NewTaxe(fixedTax),
 	}, nil
 }
 
-func (fr FixeReduction) Apply(taxe Taxe) Taxe {
+func (fr FixeReduction) Apply(taxe taxe_domain.Taxe) taxe_domain.Taxe {
 	return taxe.Sub(fr.fixedTax)
 }

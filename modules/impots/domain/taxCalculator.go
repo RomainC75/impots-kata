@@ -1,14 +1,17 @@
 package domain
 
-import money_domain "impots/modules/impots/domain/money"
+import (
+	money_domain "impots/modules/impots/domain/money"
+	taxe_domain "impots/modules/impots/domain/taxe"
+)
 
 type TaxCalculator struct {
-	prepayed          Taxe
+	prepayed          taxe_domain.Taxe
 	paySlip           money_domain.Revenu
 	reductionsHandler ReductionsHandler
 }
 
-func NewTaxCalculator(prepayed Taxe, paySlip money_domain.Revenu, reductionHandler ReductionsHandler) TaxCalculator {
+func NewTaxCalculator(prepayed taxe_domain.Taxe, paySlip money_domain.Revenu, reductionHandler ReductionsHandler) TaxCalculator {
 	return TaxCalculator{
 		prepayed:          prepayed,
 		paySlip:           paySlip,
@@ -16,7 +19,7 @@ func NewTaxCalculator(prepayed Taxe, paySlip money_domain.Revenu, reductionHandl
 	}
 }
 
-func (tc TaxCalculator) CalculateTaxeToPay() Taxe {
+func (tc TaxCalculator) CalculateTaxeToPay() taxe_domain.Taxe {
 	tranches := NewTranches()
 	// brut
 	taxe := tranches.CalculateTaxe(tc.paySlip)

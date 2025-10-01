@@ -1,4 +1,4 @@
-package domain
+package taxe_domain
 
 import money_domain "impots/modules/impots/domain/money"
 
