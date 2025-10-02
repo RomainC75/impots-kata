@@ -45,3 +45,11 @@ func (m Montant) Sub(other Montant) Montant {
 func (m Montant) IsNegative() bool {
 	return m.value < 0
 }
+
+func (m Montant) Round2Decimals() Montant {
+	return NewMontant(float64(int(m.value*100)) / 100)
+}
+
+func (m Montant) ToRevenu() Revenu {
+	return NewRevenu(m.value)
+}

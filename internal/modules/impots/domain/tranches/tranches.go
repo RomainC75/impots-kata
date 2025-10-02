@@ -6,11 +6,11 @@ import (
 )
 
 type Tranches struct {
-	tranches []Tranche
-	revenu   money_domain.Revenu
+	tranches    []Tranche
+	totalRevenu money_domain.Revenu
 }
 
-func NewTranches(revenu money_domain.Revenu) Tranches {
+func NewTranches(revenu money_domain.Revenu, entrepreneurCAAfterAbattement money_domain.Revenu) Tranches {
 	t1, _ := taxe_domain.NewTaxeRate(0)
 	t2, _ := taxe_domain.NewTaxeRate(10)
 	t3, _ := taxe_domain.NewTaxeRate(18)
@@ -25,14 +25,14 @@ func NewTranches(revenu money_domain.Revenu) Tranches {
 			NewTranche(30_000, 20_000, t4),
 			NewTranche(50_000, -1, t5),
 		},
-		revenu: revenu,
+		totalRevenu: revenu.Add(entrepreneurCAAfterAbattement),
 	}
 }
 
 func (ts Tranches) CalculateTaxe() taxe_domain.Taxe {
 	totalTaxe := taxe_domain.NewTaxe(0)
 	for _, t := range ts.tranches {
-		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(ts.revenu))
+		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(ts.totalRevenu))
 	}
 	return totalTaxe
 }

@@ -1,33 +1,50 @@
 package domain
 
 import (
+	"impots/internal/modules/impots/domain/entrepreneur"
 	money_domain "impots/internal/modules/impots/domain/money"
 	reduction_domain "impots/internal/modules/impots/domain/reduction"
 	taxe_domain "impots/internal/modules/impots/domain/taxe"
 	tranche_domain "impots/internal/modules/impots/domain/tranches"
+	"time"
 )
 
 type TaxCalculator struct {
-	prepayed          taxe_domain.Taxe
-	Revenu            money_domain.Revenu
-	reductionsHandler reduction_domain.ReductionsHandler
+	prepayedTaxe        taxe_domain.Taxe
+	RevenuSalarie       money_domain.Revenu
+	RevenusByEntreprise []entrepreneur.RevenuByEntreprise
+	reductionsHandler   reduction_domain.ReductionsHandler
+	entrepreneur        entrepreneur.Entrepreneur
 }
 
-func NewTaxCalculator(prepayed taxe_domain.Taxe, Revenu money_domain.Revenu, reductionHandler reduction_domain.ReductionsHandler) TaxCalculator {
+func NewTaxCalculator(
+	prepayedTaxe taxe_domain.Taxe,
+	revenuSalarie money_domain.Revenu,
+	reductionHandler reduction_domain.ReductionsHandler,
+	revenusByEntreprise []entrepreneur.RevenuByEntreprise,
+	entrepreneur entrepreneur.Entrepreneur,
+) TaxCalculator {
 	return TaxCalculator{
-		prepayed:          prepayed,
-		Revenu:            Revenu,
-		reductionsHandler: reductionHandler,
+		prepayedTaxe:        prepayedTaxe,
+		RevenuSalarie:       revenuSalarie,
+		RevenusByEntreprise: revenusByEntreprise,
+		reductionsHandler:   reductionHandler,
+		entrepreneur:        entrepreneur,
 	}
 }
 
-func (tc TaxCalculator) CalculateTaxeToPay() taxe_domain.Taxe {
-	tranches := tranche_domain.NewTranches(tc.Revenu)
+func (tc TaxCalculator) CalculateTaxeToPay(now time.Time) (taxe_domain.Taxe, error) {
+	entrepreneurCAAfterAbattement, err := tc.entrepreneur.CalculateAbattement(now, tc.RevenusByEntreprise)
+
+	if err != nil {
+		return taxe_domain.Taxe{}, err
+	}
+	tranches := tranche_domain.NewTranches(tc.RevenuSalarie, entrepreneurCAAfterAbattement)
 	// brut
 	taxe := tranches.CalculateTaxe()
-	// - prepayed
-	taxe = taxe.Sub(tc.prepayed)
+	// - prepayedTaxe
+	taxe = taxe.Sub(tc.prepayedTaxe)
 	// - reductions
-	taxe = tc.reductionsHandler.ApplyReductions(tc.Revenu, taxe)
-	return taxe
+	taxe = tc.reductionsHandler.ApplyReductions(tc.RevenuSalarie, taxe)
+	return taxe, nil
 }

@@ -21,6 +21,10 @@ func (u *User) PayTaxe(taxe taxe_domain.Taxe) {
 	u.prepaid = u.prepaid.Add(taxe)
 }
 
-func (u *User) Getprepaid() taxe_domain.Taxe {
+func (u *User) GetprepaidTaxe() taxe_domain.Taxe {
 	return u.prepaid
+}
+
+func (u *User) GetID() uuid.UUID {
+	return u.id
 }
