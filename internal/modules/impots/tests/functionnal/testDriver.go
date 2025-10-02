@@ -28,7 +28,12 @@ func taxSystemTestDriver(alreadyPayed float64) *applications.TaxSystem {
 		entrepreneur.Company{oldCompanyId, time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
 		entrepreneur.Company{newCompanyId, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
 	}
-	inMemoryEntrepreneurs.ExpectedEntrepreneur, _ = *entrepreneur.NewEntrepreneur(entrepreneurId, user.GetID(), companies)
+
+	entrepreneurValue, err := entrepreneur.NewEntrepreneur(entrepreneurId, user.GetID(), companies)
+	if err != nil {
+		panic(err)
+	}
+	inMemoryEntrepreneurs.ExpectedEntrepreneur = *entrepreneurValue
 
 	inMemoryUsers := infrastructure.NewInMemoryUsers()
 	inMemoryUsers.ExpectedUser = *user
