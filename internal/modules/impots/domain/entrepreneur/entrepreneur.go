@@ -49,28 +49,6 @@ func NewEntrepreneur(id uuid.UUID, userId uuid.UUID, companies []Company) (*Entr
 	}, nil
 }
 
-func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) ([]CompanyTaxeCalculator, error) {
-	calculators := make([]CompanyTaxeCalculator, 0, len(revenuByEntrepriseDetails))
-	for _, revenuByEntrepriseDetail := range revenuByEntrepriseDetails {
-		for _, company := range companies {
-			if company.Id == revenuByEntrepriseDetail.CompanyId {
-				fn := func(now time.Time) (money_domain.Revenu, error) {
-					yearDuration := time.Hour * 24 * 365
-					if now.Sub(company.StartedAt) > yearDuration {
-						etc := NewEntrepreneurTaxeCalculator()
-						return etc.CalculateTaxe(revenuByEntrepriseDetail)
-					}
-					return money_domain.NewRevenu(0), nil
-				}
-				calculators = append(calculators, fn)
-				break
-			}
-		}
-		// company not found
-	}
-	return calculators, nil
-}
-
 func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDetails []RevenuByEntreprise) (money_domain.Revenu, error) {
 	companyTaxeCalculators, err := createCompanyTaxeCalculators(e.companies, revenuByEntrepriseDetails)
 	if err != nil {
@@ -82,4 +60,29 @@ func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDeta
 		revenu = revenu.Add(currentCompanyTaxe)
 	}
 	return revenu.Round2Decimals().ToRevenu(), nil
+}
+
+func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) ([]CompanyTaxeCalculator, error) {
+	calculators := make([]CompanyTaxeCalculator, 0, len(revenuByEntrepriseDetails))
+	for _, revenuByEntrepriseDetail := range revenuByEntrepriseDetails {
+		fn := createCompanyTaxeCalculator(companies, revenuByEntrepriseDetail)
+		calculators = append(calculators, fn)
+	}
+	return calculators, nil
+}
+
+func createCompanyTaxeCalculator(companies []Company, revenuByEntrepriseDetail RevenuByEntreprise) func(now time.Time) (money_domain.Revenu, error) {
+	return func(now time.Time) (money_domain.Revenu, error) {
+		for _, company := range companies {
+			if company.Id == revenuByEntrepriseDetail.CompanyId {
+				yearDuration := time.Hour * 24 * 365
+				if now.Sub(company.StartedAt) > yearDuration {
+					etc := NewEntrepreneurTaxeCalculator()
+					return etc.CalculateTaxe(revenuByEntrepriseDetail)
+				}
+				return money_domain.NewRevenu(0), nil
+			}
+		}
+		return money_domain.Revenu{}, errors.New("company not found")
+	}
 }
