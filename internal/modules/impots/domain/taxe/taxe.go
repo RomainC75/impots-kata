@@ -48,3 +48,7 @@ func TaxeBaseMontantFromRevenu(revenu money_domain.Revenu) money_domain.Montant 
 	}
 	return base
 }
+
+func (t Taxe) Round2Decimals() Taxe {
+	return NewTaxeFromMontant(t.Montant.Round2Decimals())
+}

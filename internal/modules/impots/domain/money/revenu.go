@@ -9,3 +9,8 @@ func NewRevenu(value float64) Revenu {
 		Montant: NewMontant(value),
 	}
 }
+
+func (r Revenu) Add(other Revenu) Revenu {
+	totalMontant := r.Montant.Add(other.Montant)
+	return NewRevenu(totalMontant.value)
+}
