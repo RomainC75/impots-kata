@@ -50,25 +50,25 @@ func NewEntrepreneur(id uuid.UUID, userId uuid.UUID, companies []Company) (*Entr
 }
 
 func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDetails []RevenuByEntreprise) (money_domain.Revenu, error) {
-	companyTaxeCalculators, err := createCompanyTaxeCalculators(e.companies, revenuByEntrepriseDetails)
-	if err != nil {
-		return money_domain.Revenu{}, err
-	}
+	companyTaxeCalculators := createCompanyTaxeCalculators(e.companies, revenuByEntrepriseDetails)
 	revenu := money_domain.NewRevenu(0)
 	for _, companyTaxeCalculator := range companyTaxeCalculators {
-		currentCompanyTaxe, _ := companyTaxeCalculator(now)
+		currentCompanyTaxe, err := companyTaxeCalculator(now)
+		if err != nil {
+			return money_domain.Revenu{}, err
+		}
 		revenu = revenu.Add(currentCompanyTaxe)
 	}
 	return revenu.Round2Decimals().ToRevenu(), nil
 }
 
-func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) ([]CompanyTaxeCalculator, error) {
+func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) []CompanyTaxeCalculator {
 	calculators := make([]CompanyTaxeCalculator, 0, len(revenuByEntrepriseDetails))
 	for _, revenuByEntrepriseDetail := range revenuByEntrepriseDetails {
 		fn := createCompanyTaxeCalculator(companies, revenuByEntrepriseDetail)
 		calculators = append(calculators, fn)
 	}
-	return calculators, nil
+	return calculators
 }
 
 func createCompanyTaxeCalculator(companies []Company, revenuByEntrepriseDetail RevenuByEntreprise) func(now time.Time) (money_domain.Revenu, error) {
