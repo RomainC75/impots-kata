@@ -2,7 +2,6 @@ package entrepreneur
 
 import (
 	"errors"
-	"fmt"
 	money_domain "impots/internal/modules/impots/domain/money"
 	"time"
 
@@ -57,7 +56,6 @@ func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails
 			if company.Id == revenuByEntrepriseDetail.CompanyId {
 				fn := func(now time.Time) (money_domain.Revenu, error) {
 					yearDuration := time.Hour * 24 * 365
-					fmt.Println("---->", company.StartedAt, now)
 					if now.Sub(company.StartedAt) > yearDuration {
 						etc := NewEntrepreneurTaxeCalculator()
 						return etc.CalculateTaxe(revenuByEntrepriseDetail)
@@ -82,8 +80,6 @@ func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDeta
 	for _, companyTaxeCalculator := range companyTaxeCalculators {
 		currentCompanyTaxe, _ := companyTaxeCalculator(now)
 		revenu = revenu.Add(currentCompanyTaxe)
-		fmt.Println("-> updated entrepreneur taxe : ", revenu)
 	}
-	fmt.Println("resut revenu : ", revenu)
 	return revenu.Round2Decimals().ToRevenu(), nil
 }
