@@ -3,11 +3,14 @@ package entrepreneur
 import (
 	"errors"
 	money_domain "impots/internal/modules/impots/domain/money"
+	"time"
 )
 
 var (
 	ErrInvalidEntrepreneurTaxe = errors.New("invalid entrepreneur taxe")
 )
+
+type CompanyTaxeCalculatorFn func(now time.Time) (money_domain.Revenu, error)
 
 type EntrepreneurTaxeCalculator struct {
 	commercialRevenuRate money_domain.RevenuRate
@@ -23,7 +26,11 @@ func NewEntrepreneurTaxeCalculator() EntrepreneurTaxeCalculator {
 	}
 }
 
-func (et EntrepreneurTaxeCalculator) CalculateTaxe(revenu RevenuByEntreprise) (money_domain.Revenu, error) {
+func (et EntrepreneurTaxeCalculator) CalculateTaxe(now time.Time, company Company, revenu RevenuByEntreprise) (money_domain.Revenu, error) {
+	yearDuration := time.Hour * 24 * 365
+	if now.Sub(company.StartedAt) < yearDuration {
+		return money_domain.NewRevenu(0), nil
+	}
 	switch revenu.PrestationType {
 	case PrestationDeService:
 		return et.serviceRevenuRate.CalculateAbattement(revenu.Revenu), nil

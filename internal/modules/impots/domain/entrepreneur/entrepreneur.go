@@ -28,8 +28,6 @@ type RevenuByEntreprise struct {
 
 // ==============================
 
-type CompanyTaxeCalculator func(now time.Time) (money_domain.Revenu, error)
-
 type Company struct {
 	Id        uuid.UUID
 	StartedAt time.Time
@@ -62,8 +60,8 @@ func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDeta
 	return revenu.Round2Decimals().ToRevenu(), nil
 }
 
-func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) []CompanyTaxeCalculator {
-	calculators := make([]CompanyTaxeCalculator, 0, len(revenuByEntrepriseDetails))
+func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) []CompanyTaxeCalculatorFn {
+	calculators := make([]CompanyTaxeCalculatorFn, 0, len(revenuByEntrepriseDetails))
 	for _, revenuByEntrepriseDetail := range revenuByEntrepriseDetails {
 		fn := createCompanyTaxeCalculator(companies, revenuByEntrepriseDetail)
 		calculators = append(calculators, fn)
@@ -71,16 +69,13 @@ func createCompanyTaxeCalculators(companies []Company, revenuByEntrepriseDetails
 	return calculators
 }
 
-func createCompanyTaxeCalculator(companies []Company, revenuByEntrepriseDetail RevenuByEntreprise) func(now time.Time) (money_domain.Revenu, error) {
+func createCompanyTaxeCalculator(companies []Company, revenuByEntrepriseDetail RevenuByEntreprise) CompanyTaxeCalculatorFn {
 	return func(now time.Time) (money_domain.Revenu, error) {
 		for _, company := range companies {
 			if company.Id == revenuByEntrepriseDetail.CompanyId {
-				yearDuration := time.Hour * 24 * 365
-				if now.Sub(company.StartedAt) > yearDuration {
-					etc := NewEntrepreneurTaxeCalculator()
-					return etc.CalculateTaxe(revenuByEntrepriseDetail)
-				}
-				return money_domain.NewRevenu(0), nil
+				etc := NewEntrepreneurTaxeCalculator()
+				return etc.CalculateTaxe(now, company, revenuByEntrepriseDetail)
+
 			}
 		}
 		return money_domain.Revenu{}, errors.New("company not found")
