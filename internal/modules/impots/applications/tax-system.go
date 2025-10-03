@@ -2,6 +2,7 @@ package applications
 
 import (
 	"impots/internal/modules/impots/domain"
+	dividendes "impots/internal/modules/impots/domain/dividende"
 	"impots/internal/modules/impots/domain/entrepreneur"
 	money_domain "impots/internal/modules/impots/domain/money"
 	reduction_domain "impots/internal/modules/impots/domain/reduction"
@@ -16,6 +17,7 @@ type CalculateImpotsServiceRequest struct {
 	RevenusByEntreprise []entrepreneur.RevenuByEntreprise
 	User                uuid.UUID
 	Reductions          []reduction_domain.ReductionParameters
+	Dividendes          []dividendes.Dividende
 }
 
 type CalculateImpotsServiceResponse struct {
