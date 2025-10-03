@@ -2,6 +2,7 @@ package entrepreneur
 
 import (
 	"errors"
+	"impots/helpers"
 	money_domain "impots/internal/modules/impots/domain/money"
 	"time"
 )
@@ -9,8 +10,6 @@ import (
 var (
 	ErrInvalidEntrepreneurTaxe = errors.New("invalid entrepreneur taxe")
 )
-
-type CompanyTaxeCalculatorFn func(now time.Time) (money_domain.Revenu, error)
 
 type EntrepreneurTaxeCalculator struct {
 	commercialRevenuRate money_domain.RevenuRate
@@ -26,9 +25,16 @@ func NewEntrepreneurTaxeCalculator() EntrepreneurTaxeCalculator {
 	}
 }
 
-func (et EntrepreneurTaxeCalculator) CalculateTaxe(now time.Time, company Company, revenu RevenuByEntreprise) (money_domain.Revenu, error) {
+func (et EntrepreneurTaxeCalculator) CalculateTaxe(now time.Time, companies []Company, revenu RevenuByEntreprise) (money_domain.Revenu, error) {
+	foundCompanyIndex := helpers.FindIndex(companies, func(company Company) bool {
+		return company.Id == revenu.CompanyId
+	})
+	if foundCompanyIndex == -1 {
+		return money_domain.Revenu{}, errors.New("company not found")
+	}
+
 	yearDuration := time.Hour * 24 * 365
-	if now.Sub(company.StartedAt) < yearDuration {
+	if now.Sub(companies[foundCompanyIndex].StartedAt) < yearDuration {
 		return money_domain.NewRevenu(0), nil
 	}
 	switch revenu.PrestationType {
