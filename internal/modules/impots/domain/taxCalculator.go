@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"impots/internal/modules/impots/domain/entrepreneur"
 	money_domain "impots/internal/modules/impots/domain/money"
 	reduction_domain "impots/internal/modules/impots/domain/reduction"
@@ -33,19 +34,21 @@ func NewTaxCalculator(
 	}
 }
 
-func (tc TaxCalculator) CalculateTaxeToPay(now time.Time) (taxe_domain.Taxe, error) {
+func (tc TaxCalculator) CalculateTaxeToPay(now time.Time) (taxe_domain.Taxe, money_domain.Montant, error) {
 	entrepreneurCAAfterAbattement, err := tc.entrepreneur.CalculateAbattement(now, tc.RevenusByEntreprise)
 
 	if err != nil {
-		return taxe_domain.Taxe{}, err
+		return taxe_domain.Taxe{}, money_domain.Montant{}, err
 	}
+	fmt.Printf("salarié %f /// entrepreneur %f\n\n", tc.RevenuSalarie.ToFloat(), entrepreneurCAAfterAbattement.ToFloat())
 	tranches := tranche_domain.NewTranches(tc.RevenuSalarie, entrepreneurCAAfterAbattement)
 	// brut
-	taxe := tranches.CalculateTaxe()
-	// - prepayedTaxe
+	taxe, taxeBase := tranches.CalculateTaxe() // - prepayedTaxe
+	fmt.Println("--> total taxe (salaire + entreprises) ", taxe)
 	taxe = taxe.Sub(tc.prepayedTaxe)
 	// - reductions
 	taxe = tc.reductionsHandler.ApplyReductions(tc.RevenuSalarie, taxe)
 	// - add dividendes
-	return taxe, nil
+	// ! =>
+	return taxe, taxeBase, nil
 }

@@ -34,7 +34,7 @@ func TestEntrepreneurAbattement(t *testing.T) {
 	tcs := []struct {
 		name                       string
 		revenueByEntrepriseDetails []entrepreneur.RevenuByEntreprise
-		expectedTaxe               float64
+		expectedAbattement         float64
 	}{
 		{
 			name: "one company, prestation de service",
@@ -45,7 +45,7 @@ func TestEntrepreneurAbattement(t *testing.T) {
 					PrestationType: entrepreneur.PrestationDeService,
 				},
 			},
-			expectedTaxe: 3400,
+			expectedAbattement: 6600,
 		},
 		{
 			name: "one company, prestation commerciale",
@@ -56,7 +56,7 @@ func TestEntrepreneurAbattement(t *testing.T) {
 					PrestationType: entrepreneur.PrestationCommerciale,
 				},
 			},
-			expectedTaxe: 7100,
+			expectedAbattement: 2900,
 		},
 		{
 			name: "one company,prestation commerciale + prestation de service",
@@ -68,20 +68,20 @@ func TestEntrepreneurAbattement(t *testing.T) {
 				},
 				{
 					CompanyId:      uuid.MustParse("789e4567-e89b-12d3-a456-426614174999"),
-					Revenu:         money_domain.NewRevenu(5000),
+					Revenu:         money_domain.NewRevenu(10000),
 					PrestationType: entrepreneur.PrestationDeService,
 				},
 			},
-			expectedTaxe: 8800,
+			expectedAbattement: 9500,
 		},
 	}
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
 			entrepreneur, now := EntrepreneurTestDriver()
-			taxe, err := entrepreneur.CalculateAbattement(now, tc.revenueByEntrepriseDetails)
+			abattement, err := entrepreneur.CalculateAbattement(now, tc.revenueByEntrepriseDetails)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.expectedTaxe, taxe.ToFloat())
+			assert.Equal(t, tc.expectedAbattement, abattement.ToFloat())
 		})
 	}
 }

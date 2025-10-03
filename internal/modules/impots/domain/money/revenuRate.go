@@ -17,6 +17,11 @@ func FromPercent(rate float64) (RevenuRate, error) {
 	}, nil
 }
 
-func (rr RevenuRate) CalculateAbattement(revenu Revenu) Revenu {
+func (rr RevenuRate) CalculateTaxe(revenu Revenu) Revenu {
 	return NewRevenu(revenu.value * rr.rate / 100)
+}
+
+func (rr RevenuRate) CalculateAbattement(revenu Revenu) Revenu {
+	montantToRemove := rr.CalculateTaxe(revenu)
+	return NewRevenu(revenu.Sub(montantToRemove.Montant).ToFloat())
 }

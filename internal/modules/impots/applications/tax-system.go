@@ -1,12 +1,12 @@
 package applications
 
 import (
+	"fmt"
 	"impots/internal/modules/impots/domain"
 	dividendes "impots/internal/modules/impots/domain/dividende"
 	"impots/internal/modules/impots/domain/entrepreneur"
 	money_domain "impots/internal/modules/impots/domain/money"
 	reduction_domain "impots/internal/modules/impots/domain/reduction"
-	taxe_domain "impots/internal/modules/impots/domain/taxe"
 	user_domain "impots/internal/modules/impots/domain/users"
 
 	"github.com/google/uuid"
@@ -53,14 +53,15 @@ func (cis *TaxSystem) CalculateTax(cisRequest CalculateImpotsServiceRequest) (Ca
 
 	entrepreneur, _ := cis.entrepreneursRepo.GetEntrepreneur(foundUser.GetID())
 
+	fmt.Println(cisRequest.RevenusByEntreprise)
 	taxeCalculator := domain.NewTaxCalculator(foundUser.GetprepaidTaxe(), cisRequest.RevenuSalarie, reductionHandler, cisRequest.RevenusByEntreprise, entrepreneur)
-	totalTaxe, err := taxeCalculator.CalculateTaxeToPay(cis.timeProvider.Now())
+	totalTaxe, taxeBase, err := taxeCalculator.CalculateTaxeToPay(cis.timeProvider.Now())
 	if err != nil {
 		return CalculateImpotsServiceResponse{}, err
 	}
 
 	return CalculateImpotsServiceResponse{
-		TaxeBase:          taxe_domain.TaxeBaseMontantFromRevenu(cisRequest.RevenuSalarie).ToFloat(),
+		TaxeBase:          taxeBase.ToFloat(),
 		AlreadyPayedTaxes: foundUser.GetprepaidTaxe().ToFloat(),
 		ToBePayedTaxes:    totalTaxe.ToFloat(),
 	}, nil

@@ -1,6 +1,8 @@
 package taxe_domain
 
-import money_domain "impots/internal/modules/impots/domain/money"
+import (
+	money_domain "impots/internal/modules/impots/domain/money"
+)
 
 type Taxe struct {
 	money_domain.Montant
@@ -40,7 +42,7 @@ func (t Taxe) MultiplyByValue(value float64) Taxe {
 	return NewTaxe(t.ToFloat() * value)
 }
 
-func TaxeBaseMontantFromRevenu(revenu money_domain.Revenu) money_domain.Montant {
+func BaseMontantToBeTaxedFromRevenu(revenu money_domain.Revenu) money_domain.Montant {
 	taxableThreshold := money_domain.NewMontant(10_000)
 	base := revenu.Sub(taxableThreshold)
 	if base.IsNegative() {
@@ -51,4 +53,10 @@ func TaxeBaseMontantFromRevenu(revenu money_domain.Revenu) money_domain.Montant 
 
 func (t Taxe) Round2Decimals() Taxe {
 	return NewTaxeFromMontant(t.Montant.Round2Decimals())
+}
+
+func FromMontant(m money_domain.Montant) Taxe {
+	return Taxe{
+		Montant: m,
+	}
 }
