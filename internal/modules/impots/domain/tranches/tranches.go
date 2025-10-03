@@ -29,10 +29,11 @@ func NewTranches(revenu money_domain.Revenu, entrepreneurCAAfterAbattement money
 	}
 }
 
-func (ts Tranches) CalculateTaxe() taxe_domain.Taxe {
+func (ts Tranches) CalculateTaxe() (taxe_domain.Taxe, money_domain.Montant) {
 	totalTaxe := taxe_domain.NewTaxe(0)
 	for _, t := range ts.tranches {
 		totalTaxe = totalTaxe.Add(t.CalculateTrancheTaxe(ts.totalRevenu))
 	}
-	return totalTaxe
+	taxeBase := taxe_domain.BaseMontantToBeTaxedFromRevenu(ts.totalRevenu)
+	return totalTaxe, taxeBase
 }

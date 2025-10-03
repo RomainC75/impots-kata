@@ -25,7 +25,7 @@ func NewEntrepreneurTaxeCalculator() EntrepreneurTaxeCalculator {
 	}
 }
 
-func (et EntrepreneurTaxeCalculator) CalculateTaxe(now time.Time, companies []Company, revenu RevenuByEntreprise) (money_domain.Revenu, error) {
+func (et EntrepreneurTaxeCalculator) CalculateAbattement(now time.Time, companies []Company, revenu RevenuByEntreprise) (money_domain.Revenu, error) {
 	foundCompanyIndex := helpers.FindIndex(companies, func(company Company) bool {
 		return company.Id == revenu.CompanyId
 	})

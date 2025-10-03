@@ -2,6 +2,7 @@ package entrepreneur
 
 import (
 	"errors"
+	"fmt"
 	money_domain "impots/internal/modules/impots/domain/money"
 	"time"
 
@@ -47,6 +48,7 @@ func NewEntrepreneur(id uuid.UUID, userId uuid.UUID, companies []Company) (*Entr
 
 func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDetails []RevenuByEntreprise) (money_domain.Revenu, error) {
 	abattements, err := handleCompanyTaxeCalculators(now, e.companies, revenuByEntrepriseDetails)
+	fmt.Println("---> abattementS : ", abattements)
 	if err != nil {
 		return money_domain.Revenu{}, err
 	}
@@ -60,8 +62,10 @@ func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDeta
 func handleCompanyTaxeCalculators(now time.Time, companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) ([]money_domain.Revenu, error) {
 	abattements := make([]money_domain.Revenu, 0, len(revenuByEntrepriseDetails))
 	for _, revenuByEntrepriseDetail := range revenuByEntrepriseDetails {
+		fmt.Println("reveny by enterprise details : ", revenuByEntrepriseDetail)
 		etc := NewEntrepreneurTaxeCalculator()
-		abattement, err := etc.CalculateTaxe(now, companies, revenuByEntrepriseDetail)
+		abattement, err := etc.CalculateAbattement(now, companies, revenuByEntrepriseDetail)
+		fmt.Println("--> abattement : ", abattement)
 		if err != nil {
 			return []money_domain.Revenu{}, err
 		}

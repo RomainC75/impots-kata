@@ -12,12 +12,12 @@ import (
 )
 
 type TranchesTC struct {
-	Revenu                float64
-	AlreadyPayed          float64
-	Reductions            []reduction_domain.ReductionParameters
-	ExpectedTaxeToPay     float64
-	ExpectedTaxeBase      float64
-	EntrepreneurCompanies []entrepreneur.RevenuByEntreprise
+	Revenu             float64
+	AlreadyPayed       float64
+	Reductions         []reduction_domain.ReductionParameters
+	ExpectedTaxeToPay  float64
+	ExpectedTaxeBase   float64
+	RevenuByEntreprise []entrepreneur.RevenuByEntreprise
 }
 
 var (
@@ -55,9 +55,21 @@ func TestTaxSystem(t *testing.T) {
 		// {15_000, 0, []reduction_domain.ReductionParameters{tenPercent, twentyPercent, tenPercent, twentyPercent}, 0, 5_000},
 
 		// with additionnal revenus from entrepreneur
-		{10_000, 0, []reduction_domain.ReductionParameters{}, 0, 0, []entrepreneur.RevenuByEntreprise{
+		{10_000, 0, []reduction_domain.ReductionParameters{}, 47.5, 475, []entrepreneur.RevenuByEntreprise{
 			{oldCompanyId, money_domain.NewRevenu(500), entrepreneur.PrestationCommerciale},
-			{newCompanyId, money_domain.NewRevenu(500), entrepreneur.PrestationCommerciale},
+			{oldCompanyId, money_domain.NewRevenu(500), entrepreneur.PrestationDeService},
+		}},
+
+		// with dividendes
+		// 5000 + (500-71%) + (500-34%) -> 5000+145+330 -> 5475*10%
+		{15_000, 0, []reduction_domain.ReductionParameters{tenPercent, minus1000forRiches}, 492.75, 5_475, []entrepreneur.RevenuByEntreprise{
+			{oldCompanyId, money_domain.NewRevenu(500), entrepreneur.PrestationCommerciale},
+			{oldCompanyId, money_domain.NewRevenu(500), entrepreneur.PrestationDeService},
+		}},
+
+		{55_000, 0, []reduction_domain.ReductionParameters{minus1000, tenPercent, minus1000forRiches}, 8029, 47_190, []entrepreneur.RevenuByEntreprise{
+			{oldCompanyId, money_domain.NewRevenu(3000), entrepreneur.PrestationCommerciale},
+			{oldCompanyId, money_domain.NewRevenu(2000), entrepreneur.PrestationDeService},
 		}},
 	}
 	for _, tc := range Tcs {
@@ -65,8 +77,9 @@ func TestTaxSystem(t *testing.T) {
 			taxSystem := taxSystemTestDriver(tc.AlreadyPayed)
 
 			cisRequest := applications.CalculateImpotsServiceRequest{
-				RevenuSalarie: money_domain.NewRevenu(tc.Revenu),
-				Reductions:    tc.Reductions,
+				RevenuSalarie:       money_domain.NewRevenu(tc.Revenu),
+				Reductions:          tc.Reductions,
+				RevenusByEntreprise: tc.RevenuByEntreprise,
 			}
 			response, err := taxSystem.CalculateTax(cisRequest)
 			assert.Nil(t, err)
