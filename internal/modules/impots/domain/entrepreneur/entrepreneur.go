@@ -46,7 +46,7 @@ func NewEntrepreneur(id uuid.UUID, userId uuid.UUID, companies []Company) (*Entr
 }
 
 func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDetails []RevenuByEntreprise) (money_domain.Revenu, error) {
-	abattements, err := createCompanyTaxeCalculators(now, e.companies, revenuByEntrepriseDetails)
+	abattements, err := handleCompanyTaxeCalculators(now, e.companies, revenuByEntrepriseDetails)
 	if err != nil {
 		return money_domain.Revenu{}, err
 	}
@@ -57,7 +57,7 @@ func (e *Entrepreneur) CalculateAbattement(now time.Time, revenuByEntrepriseDeta
 	return revenu.Round2Decimals().ToRevenu(), nil
 }
 
-func createCompanyTaxeCalculators(now time.Time, companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) ([]money_domain.Revenu, error) {
+func handleCompanyTaxeCalculators(now time.Time, companies []Company, revenuByEntrepriseDetails []RevenuByEntreprise) ([]money_domain.Revenu, error) {
 	abattements := make([]money_domain.Revenu, 0, len(revenuByEntrepriseDetails))
 	for _, revenuByEntrepriseDetail := range revenuByEntrepriseDetails {
 		etc := NewEntrepreneurTaxeCalculator()

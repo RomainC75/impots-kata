@@ -46,5 +46,6 @@ func (tc TaxCalculator) CalculateTaxeToPay(now time.Time) (taxe_domain.Taxe, err
 	taxe = taxe.Sub(tc.prepayedTaxe)
 	// - reductions
 	taxe = tc.reductionsHandler.ApplyReductions(tc.RevenuSalarie, taxe)
+	// - add dividendes
 	return taxe, nil
 }
